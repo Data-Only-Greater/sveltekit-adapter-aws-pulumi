@@ -1,0 +1,17 @@
+!jest.config.js
+*.d.ts
+node_modules
+content
+output
+*.js
+!/lambda/*
+!*.config.js
+!/tests/mock/*
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out
+cdk.context.json
+
+# OSX
+.DS_Store

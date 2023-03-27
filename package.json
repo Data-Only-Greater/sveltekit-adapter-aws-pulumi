@@ -1,0 +1,52 @@
+{
+  "name": "sveltekit-adapter-aws-pulumi",
+  "description": "SvelteKit adapter for deploying to AWS using Pulumi.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/issues"
+  },
+  "homepage": "https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi#readme",
+  "license": "MIT",
+  "keywords": [
+    "sveltekit",
+    "adapter",
+    "aws",
+    "pulumi"
+  ],
+  "author": "Mathew Topper <damm_horse@yahoo.co.uk>",
+  "version": "0.1.0",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "bin": {
+    "destroy": "bin/destroy.js"
+  },
+  "scripts": {
+    "build": "tsc --excludeFiles test",
+    "watch": "tsc -w --excludeFiles test",
+    "format": "prettier --write .",
+    "test": "vitest",
+    "clean": "tsc --build --clean"
+  },
+  "devDependencies": {
+    "@pulumi/aws": "^5.32.0",
+    "@pulumi/command": "^0.7.1",
+    "@pulumi/pulumi": "^3.56.0",
+    "@types/folder-hash": "^4.0.2",
+    "@types/lodash": "^4.14.191",
+    "@types/mime": "^3.0.1",
+    "@types/node": "18.14.0",
+    "folder-hash": "^4.0.4",
+    "lodash": "^4.17.21",
+    "prettier": "2.8.4",
+    "typescript": "4.9.5",
+    "vitest": "^0.29.7"
+  },
+  "dependencies": {
+    "dotenv": "16.0.3",
+    "minimist": "^1.2.8",
+    "sveltekit-adapter-aws-base": "^0.1.0"
+  }
+}

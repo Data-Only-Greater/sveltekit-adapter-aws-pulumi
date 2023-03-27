@@ -1,0 +1,11 @@
+*.ts
+!*.d.ts
+node_modules
+content
+output
+.prettierrc
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out
+cdk.context.json
