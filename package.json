@@ -17,7 +17,7 @@
     "pulumi"
   ],
   "author": "Mathew Topper <damm_horse@yahoo.co.uk>",
-  "version": "0.1.0",
+  "version": "0.0.0-semantic-release",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {

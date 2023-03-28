@@ -1,0 +1,37 @@
+name: Release
+on:
+  workflow_run:
+    workflows: ["Unit tests"]
+    types: 
+      - completed
+jobs:
+  release:
+    name: Release (${{ github.event.workflow_run.head_commit.id }})
+    if: ${{ github.ref_name == 'main' && github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "lts/*"
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install package dependencies
+        run: yarn install
+      - name: Build package
+        run: yarn run build
+      - name: Install semantic release extras
+        run: yarn add -D @semantic-release/changelog @semantic-release/git conventional-changelog-conventionalcommits
+      - name: Semantic Release
+        id: semantic
+        uses: cycjimmy/semantic-release-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish
+        run: yarn publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        if: steps.semantic.outputs.new_release_published == 'true'
