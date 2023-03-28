@@ -20,6 +20,12 @@
   "version": "0.0.0-semantic-release",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md",
+    "package.json"
+  ],
   "bin": {
     "destroy": "dist/bin/destroy.js"
   },
