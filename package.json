@@ -18,17 +18,18 @@
   ],
   "author": "Mathew Topper <damm_horse@yahoo.co.uk>",
   "version": "0.1.0",
-  "main": "./index.js",
-  "types": "./index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "bin": {
-    "destroy": "bin/destroy.js"
+    "destroy": "dist/bin/destroy.js"
   },
   "scripts": {
-    "build": "tsc --excludeFiles test",
+    "build": "yarn clean && tsc --project tsconfig.build.json && yarn copy-files",
     "watch": "tsc -w --excludeFiles test",
     "format": "prettier --write .",
     "test": "vitest",
-    "clean": "tsc --build --clean"
+    "clean": "rimraf dist",
+    "copy-files": "copyfiles pulumi/** dist"
   },
   "devDependencies": {
     "@pulumi/aws": "^5.32.0",
@@ -37,10 +38,13 @@
     "@types/folder-hash": "^4.0.2",
     "@types/lodash": "^4.14.191",
     "@types/mime": "^3.0.1",
+    "@types/minimist": "^1.2.2",
     "@types/node": "18.14.0",
+    "copyfiles": "^2.4.1",
     "folder-hash": "^4.0.4",
     "lodash": "^4.17.21",
     "prettier": "^2.8.4",
+    "rimraf": "^4.4.1",
     "typescript": "^4.9.5",
     "vitest": "^0.29.7"
   },
