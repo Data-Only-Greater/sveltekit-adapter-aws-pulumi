@@ -29,7 +29,8 @@
     "format": "prettier --write .",
     "test": "vitest",
     "clean": "rimraf dist",
-    "copy-files": "copyfiles pulumi/** dist"
+    "copy-files": "copyfiles pulumi/** dist",
+    "coverage": "vitest run --coverage"
   },
   "devDependencies": {
     "@pulumi/aws": "^5.32.0",
@@ -40,6 +41,7 @@
     "@types/mime": "^3.0.1",
     "@types/minimist": "^1.2.2",
     "@types/node": "18.14.0",
+    "@vitest/coverage-c8": "^0.29.8",
     "copyfiles": "^2.4.1",
     "folder-hash": "^4.0.4",
     "lodash": "^4.17.21",
