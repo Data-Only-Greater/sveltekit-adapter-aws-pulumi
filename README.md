@@ -1,3 +1,10 @@
+[![npm](https://img.shields.io/npm/v/sveltekit-adapter-aws-pulumi)](https://www.npmjs.com/package/sveltekit-adapter-aws-pulumi)
+
+[![Unit tests](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/actions/workflows/unit_tests.yml/badge.svg)](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/actions/workflows/unit_tests.yml)
+[![Release](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/actions/workflows/release.yml/badge.svg)](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/actions/workflows/release.yml)
+
+[![codecov](https://codecov.io/github/Data-Only-Greater/sveltekit-adapter-aws-pulumi/branch/main/graph/badge.svg?token=LIENVYALUL)](https://app.codecov.io/github/Data-Only-Greater/sveltekit-adapter-aws-pulumi)
+
 # SvelteKit AWS Adapter for Pulumi
 
 This project contains a SvelteKit adapter to deploy SvelteKit to AWS using Pulumi.
