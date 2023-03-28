@@ -13,7 +13,6 @@ export interface AWSAdapterProps {
   staticHeaders?: string[]
   esbuildOptions?: any
   FQDN?: string
-  LOG_RETENTION_DAYS?: number
   MEMORY_SIZE?: number
   zoneName?: string
   env?: { [key: string]: string }
@@ -23,7 +22,7 @@ export function adapter({
   artifactPath = 'build',
   autoDeploy = false,
   pulumiPath = `${__dirname}/pulumi`,
-  stackName = 'sveltekit-adapter-aws-webapp',
+  stackName = 'sveltekit-adapter-aws',
   serverHeaders = [
     'Accept',
     'Accept-Charset',
@@ -37,7 +36,6 @@ export function adapter({
   staticHeaders = ['User-Agent', 'Referer'],
   esbuildOptions = {},
   FQDN,
-  LOG_RETENTION_DAYS,
   MEMORY_SIZE,
   zoneName = '',
   env = {},
