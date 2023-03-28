@@ -1,22 +1,22 @@
-import { writeFileSync } from 'fs';
-import { join } from 'path';
-import { spawnSync } from 'child_process';
+import { writeFileSync } from 'fs'
+import { join } from 'path'
+import { spawnSync } from 'child_process'
 
 import prepAdapter from 'sveltekit-adapter-aws-base'
 
 export interface AWSAdapterProps {
-  artifactPath?: string;
-  autoDeploy?: boolean;
-  pulumiPath?: string;
-  stackName?: string;
-  serverHeaders?: string[];
-  staticHeaders?: string[];
-  esbuildOptions?: any;
-  FQDN?: string;
-  LOG_RETENTION_DAYS?: number;
-  MEMORY_SIZE?: number;
-  zoneName?: string;
-  env?: { [key: string]: string };
+  artifactPath?: string
+  autoDeploy?: boolean
+  pulumiPath?: string
+  stackName?: string
+  serverHeaders?: string[]
+  staticHeaders?: string[]
+  esbuildOptions?: any
+  FQDN?: string
+  LOG_RETENTION_DAYS?: number
+  MEMORY_SIZE?: number
+  zoneName?: string
+  env?: { [key: string]: string }
 }
 
 export function adapter({
@@ -32,7 +32,7 @@ export function adapter({
     'Accept-Datetime',
     'Accept-Language',
     'Origin',
-    'Referer'
+    'Referer',
   ],
   staticHeaders = ['User-Agent', 'Referer'],
   esbuildOptions = {},
@@ -46,18 +46,17 @@ export function adapter({
   return {
     name: 'adapter-aws-pulumi',
     async adapt(builder: any) {
-      
       const {
-        server_directory, 
-        static_directory, 
+        server_directory,
+        static_directory,
         prerendered_directory,
-        routes } = await prepAdapter(builder, artifactPath, esbuildOptions)
+        routes,
+      } = await prepAdapter(builder, artifactPath, esbuildOptions)
 
       if (autoDeploy) {
-          
-        let adapterProps: AWSAdapterProps = {};
-        
-        builder.log.minor('Deploy using Pulumi.');
+        let adapterProps: AWSAdapterProps = {}
+
+        builder.log.minor('Deploy using Pulumi.')
 
         spawnSync('pulumi', ['up', '-s', stackName, '-f', '-y'], {
           cwd: pulumiPath,
@@ -78,15 +77,17 @@ export function adapter({
             process.env,
             env
           ),
-        });
+        })
 
-        adapterProps.pulumiPath = pulumiPath;
-        adapterProps.stackName = stackName;
-        writeFileSync(join(artifactPath, '.adapterprops.json'), JSON.stringify(adapterProps));
-        
-        builder.log.minor('Pulumi deployment done.');
-        
+        adapterProps.pulumiPath = pulumiPath
+        adapterProps.stackName = stackName
+        writeFileSync(
+          join(artifactPath, '.adapterprops.json'),
+          JSON.stringify(adapterProps)
+        )
+
+        builder.log.minor('Pulumi deployment done.')
       }
     },
-  };
+  }
 }
