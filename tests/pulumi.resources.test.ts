@@ -22,7 +22,6 @@ describe('pulumi/resources.ts', () => {
     const assumeRolePolicy = await promiseOf(test.assumeRolePolicy)
     const statement = JSON.parse(assumeRolePolicy).Statement[0]
 
-    console.log(statement)
     expectTypeOf(test).toEqualTypeOf<aws.iam.Role>()
     expect(statement.Action).toMatch('sts:AssumeRole')
     expect(statement.Effect).toMatch('Allow')
@@ -53,7 +52,6 @@ describe('pulumi/resources.ts', () => {
 
     await new Promise((r) => setTimeout(r, 1000))
 
-    console.log(routeApiId)
     expectTypeOf(defaultRoute).toEqualTypeOf<aws.apigatewayv2.Route>()
     expect(routeKey).toMatch('$default')
     expect(routeApiId).toMatch(expectedApiId)
@@ -61,8 +59,6 @@ describe('pulumi/resources.ts', () => {
     const target = await promiseOf(defaultRoute.target)
     const integrationMatch = target!.match('integrations/(.*?)-id')
     const serverIntegrationName = integrationMatch![1]
-
-    console.log(mocks.resources)
 
     expect(mocks.resources).toHaveProperty(serverIntegrationName)
     const serverIntegration = mocks.resources[serverIntegrationName]

@@ -21,7 +21,6 @@ describe('pulumi/utils.ts', () => {
     const tmpDir = getTempDir()
     const data = 'MOCK=mymock'
 
-    console.log(tmpDir)
     fs.writeFileSync(path.join(tmpDir, '.env'), data)
 
     const environment = utils.getEnvironment(tmpDir)
@@ -35,7 +34,6 @@ describe('pulumi/utils.ts', () => {
     const tmpDir = getTempDir()
     const data = 'MOCK=mymock'
 
-    console.log(tmpDir)
     fs.writeFileSync(path.join(tmpDir, '.env'), data)
 
     const environment = utils.getEnvironment(tmpDir)
