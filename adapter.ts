@@ -1,8 +1,11 @@
 import { writeFileSync } from 'fs'
 import { join } from 'path'
 import { spawnSync } from 'child_process'
+import * as url from 'url'
 
 import prepAdapter from 'sveltekit-adapter-aws-base'
+
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
 export interface AWSAdapterProps {
   artifactPath?: string
