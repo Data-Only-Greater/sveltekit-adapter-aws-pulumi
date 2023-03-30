@@ -18,16 +18,17 @@
   ],
   "author": "Mathew Topper <damm_horse@yahoo.co.uk>",
   "version": "0.0.0-semantic-release",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "files": [
-    "dist",
-    "LICENSE",
-    "README.md",
-    "package.json"
-  ],
+  "type": "module",
+  "exports": {
+		".": {
+			"types": "./index.d.ts",
+			"import": "./index.js"
+		},
+		"./package.json": "./package.json"
+	},
+  "types": "./index.d.ts",
   "bin": {
-    "destroy": "dist/bin/destroy.js"
+    "destroy": "./bin/destroy.js"
   },
   "scripts": {
     "build": "yarn clean && tsc --project tsconfig.build.json && yarn copy-files",
@@ -35,7 +36,7 @@
     "format": "prettier --write .",
     "test": "vitest",
     "clean": "rimraf dist",
-    "copy-files": "copyfiles pulumi/** dist",
+    "copy-files": "copyfiles pulumi/** package.json README.md LICENSE dist",
     "coverage": "vitest run --coverage"
   },
   "devDependencies": {
@@ -59,6 +60,37 @@
   "dependencies": {
     "dotenv": "^16.0.3",
     "minimist": "^1.2.8",
-    "sveltekit-adapter-aws-base": "^1.0.2"
+    "sveltekit-adapter-aws-base": "^1.2.0"
+  },
+  "release": {
+    "branches": [
+      "main"
+    ],
+    "plugins": [
+      [
+        "@semantic-release/commit-analyzer",
+        {
+          "preset": "conventionalcommits"
+        }
+      ],
+      "@semantic-release/release-notes-generator",
+      [
+        "@semantic-release/changelog",
+        {
+          "changelogFile": "../CHANGELOG.md"
+        }
+      ],
+      "@semantic-release/npm",
+      "@semantic-release/github",
+      [
+        "@semantic-release/git",
+        {
+          "assets": [
+            "../CHANGELOG.md"
+          ],
+          "message": "chore(release): set `package.json` to ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+        }
+      ]
+    ]
   }
 }
