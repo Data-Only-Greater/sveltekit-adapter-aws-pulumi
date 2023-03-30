@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.0.3...v1.0.4) (2023-03-30)
+
+
+### Bug Fixes
+
+* fix ESM module issues not picked up by test suite ([bfd23d6](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/bfd23d6993551d5932009518c157c8fb3b2fbc86))
+
 ## [1.0.2](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.0.1...v1.0.2) (2023-03-28)
 
 
