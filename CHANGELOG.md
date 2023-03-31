@@ -1,3 +1,10 @@
+## [1.0.5](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.0.4...v1.0.5) (2023-03-31)
+
+
+### Bug Fixes
+
+* install packages required for pulumi deploy ([fd14ddb](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/fd14ddbcde5dc1dfd63be1cbd5425c7a65198b6d))
+
 ## [1.0.4](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.0.3...v1.0.4) (2023-03-30)
 
 
