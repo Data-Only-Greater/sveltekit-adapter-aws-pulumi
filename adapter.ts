@@ -74,6 +74,8 @@ export function adapter({
               FQDN,
               MEMORY_SIZE,
               ZONE_NAME: zoneName,
+              TS_NODE_SKIP_IGNORE: 1,
+              TS_NODE_SCOPE: 1
             },
             process.env,
             env
