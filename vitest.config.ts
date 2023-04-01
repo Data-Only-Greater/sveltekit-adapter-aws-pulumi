@@ -5,7 +5,7 @@ export default defineConfig({
     globals: true,
     coverage: {
       reporter: ['text', 'lcov'],
-      all: true
+      all: true,
     },
   },
 })

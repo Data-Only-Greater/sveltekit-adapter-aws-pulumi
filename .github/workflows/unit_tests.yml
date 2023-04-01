@@ -10,17 +10,17 @@ jobs:
         node-version: [16, 18]
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v3
-    - name: Install Node
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-    - name: Install dependencies
-      run: yarn install
-    - name: Test
-      run: yarn run test run --reporter verbose
+      - uses: actions/checkout@v3
+      - name: Install Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install dependencies
+        run: yarn install
+      - name: Test
+        run: yarn run test run --reporter verbose
   coverage:
-    needs: "test"
+    needs: 'test'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

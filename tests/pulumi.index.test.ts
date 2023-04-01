@@ -29,7 +29,6 @@ describe('pulumi/index.ts', () => {
         defaultRoute: 'mock',
       }
     })
-
     ;(resources.buildCDN as any).mockImplementation(() => {
       return {
         domainName: 'example.com',
@@ -37,7 +36,6 @@ describe('pulumi/index.ts', () => {
     })
 
     let checkOrigins: pulumi.Output<string>[]
-
     ;(resources.buildServerOptionsHandler as any).mockImplementation(
       async (iamForLambda: any, httpApi: any, allowedOrigins: any) => {
         checkOrigins = allowedOrigins
@@ -68,14 +66,12 @@ describe('pulumi/index.ts', () => {
   it('With FQDN', async () => {
     const fqdn = 'mock.application.net'
     process.env['FQDN'] = fqdn
-
     ;(resources.buildServer as any).mockImplementation(() => {
       return {
         httpApi: 'mock',
         defaultRoute: 'mock',
       }
     })
-
     ;(resources.buildCDN as any).mockImplementation(() => {
       return {
         domainName: 'example.com',
@@ -83,7 +79,6 @@ describe('pulumi/index.ts', () => {
     })
 
     let checkOrigins: pulumi.Output<string>[]
-
     ;(resources.buildServerOptionsHandler as any).mockImplementation(
       async (iamForLambda: any, httpApi: any, allowedOrigins: any) => {
         checkOrigins = allowedOrigins

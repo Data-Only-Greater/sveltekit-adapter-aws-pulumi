@@ -8,8 +8,15 @@ import { local } from '@pulumi/command'
 import { DotenvConfigOutput } from 'dotenv'
 import { hashElement } from 'folder-hash'
 
+import { NameRegister } from './utils'
+
+const nameRegister = NameRegister.getInstance()
+let registerName = (name: string): string => {
+  return nameRegister.registerName(name)
+}
+
 export function getLambdaRole(): aws.iam.Role {
-  return new aws.iam.Role('IamForLambda', {
+  return new aws.iam.Role(registerName('IamForLambda'), {
     assumeRolePolicy: `{
           "Version": "2012-10-17",
           "Statement": [
@@ -36,31 +43,37 @@ export function buildServer(
   httpApi: aws.apigatewayv2.Api
   defaultRoute: aws.apigatewayv2.Route
 } {
-  const RPA = new aws.iam.RolePolicyAttachment('ServerRPABasicExecutionRole', {
-    role: iamForLambda.name,
-    policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole,
-  })
+  const RPA = new aws.iam.RolePolicyAttachment(
+    registerName('ServerRPABasicExecutionRole'),
+    {
+      role: iamForLambda.name,
+      policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole,
+    }
+  )
 
-  const serverHandler = new aws.lambda.Function('LambdaServerFunctionHandler', {
-    code: new pulumi.asset.FileArchive(serverPath),
-    role: iamForLambda.arn,
-    handler: 'index.handler',
-    runtime: 'nodejs16.x',
-    timeout: 900,
-    memorySize: memorySize,
-    environment: {
-      variables: {
-        ...environment.parsed,
-      } as any,
-    },
-  })
+  const serverHandler = new aws.lambda.Function(
+    registerName('LambdaServerFunctionHandler'),
+    {
+      code: new pulumi.asset.FileArchive(serverPath),
+      role: iamForLambda.arn,
+      handler: 'index.handler',
+      runtime: 'nodejs16.x',
+      timeout: 900,
+      memorySize: memorySize,
+      environment: {
+        variables: {
+          ...environment.parsed,
+        } as any,
+      },
+    }
+  )
 
-  const httpApi = new aws.apigatewayv2.Api('API', {
+  const httpApi = new aws.apigatewayv2.Api(registerName('API'), {
     protocolType: 'HTTP',
   })
 
   const serverPermission = new aws.lambda.Permission(
-    'ServerPermission',
+    registerName('ServerPermission'),
     {
       action: 'lambda:InvokeFunction',
       principal: 'apigateway.amazonaws.com',
@@ -71,7 +84,7 @@ export function buildServer(
   )
 
   const serverIntegration = new aws.apigatewayv2.Integration(
-    'ServerIntegration',
+    registerName('ServerIntegration'),
     {
       apiId: httpApi.id,
       integrationType: 'AWS_PROXY',
@@ -82,7 +95,7 @@ export function buildServer(
   )
 
   const defaultRoute = new aws.apigatewayv2.Route(
-    'DefaultRoute',
+    registerName('DefaultRoute'),
     {
       apiId: httpApi.id,
       routeKey: '$default',
@@ -102,10 +115,12 @@ export function validateCertificate(
     throw new Error('FQDN must contain domainName')
   }
 
-  let eastRegion = new aws.Provider('east', { region: 'us-east-1' })
+  let eastRegion = new aws.Provider(registerName('ProviderEast'), {
+    region: 'us-east-1',
+  })
 
   const certificate = new aws.acm.Certificate(
-    'Certificate',
+    registerName('Certificate'),
     {
       domainName: FQDN,
       validationMethod: 'DNS',
@@ -118,16 +133,19 @@ export function validateCertificate(
     privateZone: false,
   })
 
-  const validationRecord = new aws.route53.Record(`${FQDN}.validation`, {
-    name: certificate.domainValidationOptions[0].resourceRecordName,
-    records: [certificate.domainValidationOptions[0].resourceRecordValue],
-    ttl: 60,
-    type: certificate.domainValidationOptions[0].resourceRecordType,
-    zoneId: hostedZone.then((x) => x.zoneId),
-  })
+  const validationRecord = new aws.route53.Record(
+    registerName(`${FQDN}.validation`),
+    {
+      name: certificate.domainValidationOptions[0].resourceRecordName,
+      records: [certificate.domainValidationOptions[0].resourceRecordValue],
+      ttl: 60,
+      type: certificate.domainValidationOptions[0].resourceRecordType,
+      zoneId: hostedZone.then((x) => x.zoneId),
+    }
+  )
 
   const certificateValidation = new aws.acm.CertificateValidation(
-    'CertificateValidation',
+    registerName('CertificateValidation'),
     {
       certificateArn: certificate.arn,
       validationRecordFqdns: [validationRecord.fqdn],
@@ -142,7 +160,7 @@ export function buildStatic(
   staticPath: string,
   prerenderedPath: string
 ): aws.s3.Bucket {
-  const bucket = new aws.s3.Bucket('StaticContentBucket', {
+  const bucket = new aws.s3.Bucket(registerName('StaticContentBucket'), {
     acl: 'private',
     forceDestroy: true,
   })
@@ -176,7 +194,7 @@ export function uploadStatic(dirPath: string, bucket: aws.s3.Bucket) {
     const relativeFilePath = filePath.replace(dirPath + path.sep, '')
     const posixFilePath = relativeFilePath.split(path.sep).join(path.posix.sep)
     const contentFile = new aws.s3.BucketObject(
-      posixFilePath,
+      registerName(posixFilePath),
       {
         key: posixFilePath,
         bucket: bucket.id,
@@ -200,14 +218,14 @@ export function buildCDN(
   certificateArn?: pulumi.Input<string>
 ): aws.cloudfront.Distribution {
   const originAccessIdentity = new aws.cloudfront.OriginAccessIdentity(
-    'OriginAccessIdentity',
+    registerName('OriginAccessIdentity'),
     {
       comment: 'this is needed to setup s3 polices and make s3 not public.',
     }
   )
 
   const defaultRequestPolicy = new aws.cloudfront.OriginRequestPolicy(
-    'DefaultRequestPolicy',
+    registerName('DefaultRequestPolicy'),
     {
       cookiesConfig: {
         cookieBehavior: 'all',
@@ -229,7 +247,7 @@ export function buildCDN(
   })
 
   const oac = new aws.cloudfront.OriginAccessControl(
-    'CloudFrontOriginAccessControl',
+    registerName('CloudFrontOriginAccessControl'),
     {
       description: 'Default Origin Access Control',
       name: 'CloudFrontOriginAccessControl',
@@ -240,7 +258,7 @@ export function buildCDN(
   )
 
   const distribution = new aws.cloudfront.Distribution(
-    'CloudFrontDistribution',
+    registerName('CloudFrontDistribution'),
     {
       origins: [
         {
@@ -340,7 +358,7 @@ export function buildCDN(
   })
 
   const cloudFrontBucketPolicy = new aws.s3.BucketPolicy(
-    'CloudFrontBucketPolicy',
+    registerName('CloudFrontBucketPolicy'),
     {
       bucket: bucket.id,
       policy: cloudFrontPolicyDocument.apply((policy) => policy.json),
@@ -352,7 +370,7 @@ export function buildCDN(
 
 function buildBehavior(route: string, headers: string[]) {
   const routeRequestPolicy = new aws.cloudfront.OriginRequestPolicy(
-    'RouteRequestPolicy',
+    registerName(`RouteRequestPolicy (${route})`),
     {
       cookiesConfig: {
         cookieBehavior: 'none',
@@ -392,7 +410,7 @@ export function createAliasRecord(
   const hostedZoneId = aws.route53
     .getZone({ name: domainParts.parentDomain }, { async: true })
     .then((zone) => zone.zoneId)
-  return new aws.route53.Record(targetDomain, {
+  return new aws.route53.Record(registerName(targetDomain), {
     name: domainParts.subdomain,
     zoneId: hostedZoneId,
     type: 'A',
@@ -434,19 +452,24 @@ export function buildServerOptionsHandler(
   httpApi: aws.apigatewayv2.Api,
   allowedOrigins: (string | pulumi.Output<string>)[]
 ): aws.apigatewayv2.Route {
-  const RPA = new aws.iam.RolePolicyAttachment('ServerRPABasicExecutionRole', {
-    role: iamForLambda.name,
-    policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole,
-  })
+  const RPA = new aws.iam.RolePolicyAttachment(
+    registerName('ServerRPABasicExecutionRole'),
+    {
+      role: iamForLambda.name,
+      policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole,
+    }
+  )
 
-  const optionsHandler = new aws.lambda.Function('OptionsLambda', {
-    role: iamForLambda.arn,
-    handler: 'index.handler',
-    runtime: 'nodejs16.x',
-    code: new pulumi.asset.AssetArchive({
-      'index.js': pulumi.all(allowedOrigins).apply((x) => {
-        return new pulumi.asset.StringAsset(
-          `exports.handler = async(event) => {
+  const optionsHandler = new aws.lambda.Function(
+    registerName('OptionsLambda'),
+    {
+      role: iamForLambda.arn,
+      handler: 'index.handler',
+      runtime: 'nodejs16.x',
+      code: new pulumi.asset.AssetArchive({
+        'index.js': pulumi.all(allowedOrigins).apply((x) => {
+          return new pulumi.asset.StringAsset(
+            `exports.handler = async(event) => {
           const allowedOrigins = ${JSON.stringify(x)};
           var headers = {'Access-Control-Allow-Methods': '*',
                          'Access-Control-Allow-Headers': '*',
@@ -461,13 +484,14 @@ export function buildServerOptionsHandler(
           };
           return response;
           }`
-        )
+          )
+        }),
       }),
-    }),
-  })
+    }
+  )
 
   const optionsPermission = new aws.lambda.Permission(
-    'OptionsPermission',
+    registerName('OptionsPermission'),
     {
       action: 'lambda:InvokeFunction',
       principal: 'apigateway.amazonaws.com',
@@ -478,7 +502,7 @@ export function buildServerOptionsHandler(
   )
 
   const optionsIntegration = new aws.apigatewayv2.Integration(
-    'OptionsIntegration',
+    registerName('OptionsIntegration'),
     {
       apiId: httpApi.id,
       integrationType: 'AWS_PROXY',
@@ -489,7 +513,7 @@ export function buildServerOptionsHandler(
   )
 
   const optionsRoute = new aws.apigatewayv2.Route(
-    'OptionsRoute',
+    registerName('OptionsRoute'),
     {
       apiId: httpApi.id,
       routeKey: 'OPTIONS /{proxy+}',
@@ -506,7 +530,7 @@ export function deployServer(
   apiRoutes: aws.apigatewayv2.Route[]
 ) {
   const stage = new aws.apigatewayv2.Stage(
-    'ApiStage',
+    registerName('ApiStage'),
     {
       name: '$default',
       apiId: httpApi.id,
@@ -576,16 +600,16 @@ export function buildInvalidator(
     }
   }
 
-  let staticHash = new PathHash('StaticHash', {
+  let staticHash = new PathHash(registerName('StaticHash'), {
     path: staticPath,
   })
 
-  let prerenderedHash = new PathHash('PrerenderedHash', {
+  let prerenderedHash = new PathHash(registerName('PrerenderedHash'), {
     path: prerenderedPath!,
   })
 
   const invalidationCommand = new local.Command(
-    'Invalidate',
+    registerName('Invalidate'),
     {
       create: pulumi.interpolate`aws cloudfront create-invalidation --distribution-id ${distribution.id} --paths /\*`,
       triggers: [staticHash.hash, prerenderedHash.hash],

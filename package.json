@@ -20,12 +20,12 @@
   "version": "0.0.0-semantic-release",
   "type": "module",
   "exports": {
-		".": {
-			"types": "./index.d.ts",
-			"import": "./index.js"
-		},
-		"./package.json": "./package.json"
-	},
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "types": "./index.d.ts",
   "bin": {
     "destroy": "./bin/destroy.js"

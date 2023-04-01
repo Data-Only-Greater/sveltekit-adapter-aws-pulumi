@@ -23,8 +23,8 @@ This project contains a SvelteKit adapter to deploy SvelteKit to AWS using Pulum
 **svelte.config.js**
 
 ```javascript
-import { adapter } from 'sveltekit-adapter-aws-pulumi';
-import preprocess from 'svelte-preprocess';
+import { adapter } from 'sveltekit-adapter-aws-pulumi'
+import preprocess from 'svelte-preprocess'
 
 export default {
   preprocess: preprocess(),
@@ -33,7 +33,7 @@ export default {
       autoDeploy: true,
     }),
   },
-};
+}
 ```
 
 ## Architecture
@@ -54,16 +54,16 @@ The following diagram shows the architecture deployed by this package. The key f
 
 ```typescript
 export interface AWSAdapterProps {
-  artifactPath?: string; // Build output directory (default: build)
-  autoDeploy?: boolean; // Should automatically deploy in SvelteKit build step (default: false)
-  pulumiPath?: string; // Path to Pulumi project for custom deployments (e.g. ${process.cwd()}/pulumi)
-  stackName?: string; // Pulumi stack name (default: sveltekit-adapter-aws)
-  serverHeaders?: string[]; // Whitelist of headers for the SSR server. Defaults to ['Accept','Accept-Charset','Access-Control-Request-Method','Access-Control-Request-Headers','Accept-Datetime','Accept-Language','Origin','Referer']
-  staticHeaders?: string[]; // Whitelist of headers for the static files. Defaults to ['User-Agent', 'Referer']
-  esbuildOptions?: any; // Override or extend default esbuild options. Supports `external` (default `['node:*']`), `format` (default `cjs`), `target` (default `node16`), `banner` (default `{}`).
-  FQDN?: string; // Full qualified domain name of CloudFront deployment (e.g. demo.example.com)
-  MEMORY_SIZE?: number; // Memory size of SSR lambda in MB (default 128 MB)
-  zoneName?: string; // The name of the hosted zone in Route 53 (defaults to the TLD from the FQDN)
+  artifactPath?: string // Build output directory (default: build)
+  autoDeploy?: boolean // Should automatically deploy in SvelteKit build step (default: false)
+  pulumiPath?: string // Path to Pulumi project for custom deployments (e.g. ${process.cwd()}/pulumi)
+  stackName?: string // Pulumi stack name (default: sveltekit-adapter-aws)
+  serverHeaders?: string[] // Whitelist of headers for the SSR server. Defaults to ['Accept','Accept-Charset','Access-Control-Request-Method','Access-Control-Request-Headers','Accept-Datetime','Accept-Language','Origin','Referer']
+  staticHeaders?: string[] // Whitelist of headers for the static files. Defaults to ['User-Agent', 'Referer']
+  esbuildOptions?: any // Override or extend default esbuild options. Supports `external` (default `['node:*']`), `format` (default `cjs`), `target` (default `node16`), `banner` (default `{}`).
+  FQDN?: string // Full qualified domain name of CloudFront deployment (e.g. demo.example.com)
+  MEMORY_SIZE?: number // Memory size of SSR lambda in MB (default 128 MB)
+  zoneName?: string // The name of the hosted zone in Route 53 (defaults to the TLD from the FQDN)
 }
 ```
 

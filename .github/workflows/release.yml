@@ -1,8 +1,8 @@
 name: Release
 on:
   workflow_run:
-    workflows: ["Unit tests"]
-    types: 
+    workflows: ['Unit tests']
+    types:
       - completed
 jobs:
   release:
@@ -17,7 +17,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "lts/*"
+          node-version: 'lts/*'
           registry-url: 'https://registry.npmjs.org'
       - name: Install package dependencies
         run: yarn install

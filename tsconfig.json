@@ -21,7 +21,7 @@
     "allowSyntheticDefaultImports": true,
     "allowJs": false,
     "typeRoots": ["./node_modules/@types"],
-    "types": ["vitest/globals"],
+    "types": ["vitest/globals"]
   },
   "exclude": ["vitest.config.ts", "dist"]
 }

@@ -59,26 +59,29 @@ export function adapter({
 
         builder.log.minor('Deploy using Pulumi.')
 
+        const default_env: any = {
+          PROJECT_PATH: join(process.cwd(), '.env'),
+          SERVER_PATH: join(process.cwd(), server_directory),
+          STATIC_PATH: join(process.cwd(), static_directory),
+          PRERENDERED_PATH: join(process.cwd(), prerendered_directory),
+          ROUTES: routes,
+          SERVER_HEADERS: serverHeaders,
+          STATIC_HEADERS: staticHeaders,
+          FQDN,
+          MEMORY_SIZE,
+          ZONE_NAME: zoneName,
+        }
+
+        // Fix TS_NODE_IGNORE when package is installed to node_modules
+        if (pulumiPath === `${__dirname}/pulumi`) {
+          default_env['TS_NODE_IGNORE'] =
+            '^(?!.*(sveltekit-adapter-aws-pulumi)).*'
+        }
+
         spawnSync('pulumi', ['up', '-s', stackName, '-f', '-y'], {
           cwd: pulumiPath,
           stdio: [process.stdin, process.stdout, process.stderr],
-          env: Object.assign(
-            {
-              PROJECT_PATH: join(process.cwd(), '.env'),
-              SERVER_PATH: join(process.cwd(), server_directory),
-              STATIC_PATH: join(process.cwd(), static_directory),
-              PRERENDERED_PATH: join(process.cwd(), prerendered_directory),
-              ROUTES: routes,
-              SERVER_HEADERS: serverHeaders,
-              STATIC_HEADERS: staticHeaders,
-              FQDN,
-              MEMORY_SIZE,
-              ZONE_NAME: zoneName,
-              TS_NODE_IGNORE: '^(?!.*(sveltekit-adapter-aws-pulumi)).*'
-            },
-            process.env,
-            env
-          ),
+          env: Object.assign(default_env, process.env, env),
         })
 
         adapterProps.pulumiPath = pulumiPath
