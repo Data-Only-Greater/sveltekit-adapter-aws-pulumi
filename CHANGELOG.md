@@ -1,3 +1,10 @@
+## [1.0.6](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.0.5...v1.0.6) (2023-04-01)
+
+
+### Bug Fixes
+
+* fixed duplicate resource names ([389a06d](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/389a06d3cf373523159928ceba52f4a2e44b0ee8))
+
 ## [1.0.5](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.0.4...v1.0.5) (2023-03-31)
 
 
