@@ -387,7 +387,11 @@ function buildBehaviors(routes: string[], headers: string[]): Behavior[] {
   return behaviors
 }
 
-function buildBehavior(route: string, headers: string[], index: number): Behavior {
+function buildBehavior(
+  route: string,
+  headers: string[],
+  index: number
+): Behavior {
   const routeRequestPolicy = new aws.cloudfront.OriginRequestPolicy(
     registerName(`RouteRequestPolicy${index}`),
     {
@@ -472,7 +476,7 @@ export function buildServerOptionsHandler(
   allowedOrigins: (string | pulumi.Output<string>)[]
 ): aws.apigatewayv2.Route {
   const RPA = new aws.iam.RolePolicyAttachment(
-    registerName('ServerRPABasicExecutionRole'),
+    registerName('OptionsRPABasicExecutionRole'),
     {
       role: iamForLambda.name,
       policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole,
