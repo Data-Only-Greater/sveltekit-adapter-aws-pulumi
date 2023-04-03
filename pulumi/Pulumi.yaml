@@ -1,6 +1,6 @@
-name: aws-ts-apigateway
+name: sveltekit-aws-adapter
 runtime: nodejs
-description: Basic example of using AWS API Gateway
+description: SvelteKit adapter to deploy SvelteKit to AWS using Pulumi
 template:
   config:
     aws:region:
