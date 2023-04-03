@@ -16,12 +16,9 @@ export async function main(args: string[]): Promise<void> {
   if (argv._.length) {
     artifactPath = argv._[0]
   }
-
-  const propsPath = path.resolve(
-    process.cwd(),
-    artifactPath,
-    '.adapterprops.json'
-  )
+  
+  const absArtifactPath = path.resolve(process.cwd(), artifactPath)
+  const propsPath = path.join(absArtifactPath, '.adapterprops.json')
   
   const require = createRequire(import.meta.url)
   let adapterProps: AWSAdapterProps
@@ -42,7 +39,7 @@ export async function main(args: string[]): Promise<void> {
     env: process.env,
   })
   
-  fs.rmSync(artifactPath, { recursive: true, force: true })
+  fs.rmSync(absArtifactPath, { recursive: true, force: true })
   
 }
 
