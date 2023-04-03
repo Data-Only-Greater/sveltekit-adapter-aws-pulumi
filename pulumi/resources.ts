@@ -308,7 +308,7 @@ export function buildCDN(
         cachePolicyId: disabledCachePolicy.apply((policy) => policy.id!),
         targetOriginId: 'httpOrigin',
       },
-      orderedCacheBehaviors: routes.map((x) => buildBehavior(x, staticHeaders)),
+      orderedCacheBehaviors: buildBehaviors(routes, staticHeaders),
       restrictions: {
         geoRestriction: {
           restrictionType: 'none',
@@ -368,9 +368,28 @@ export function buildCDN(
   return distribution
 }
 
-function buildBehavior(route: string, headers: string[]) {
+interface Behavior {
+  pathPattern: string
+  allowedMethods: string[]
+  cachedMethods: string[]
+  targetOriginId: string
+  originRequestPolicyId: pulumi.Output<string>
+  cachePolicyId: pulumi.Output<string>
+  viewerProtocolPolicy: string
+}
+
+function buildBehaviors(routes: string[], headers: string[]): Behavior[] {
+  const behaviors: Behavior[] = []
+  for (const [index, route] of routes.entries()) {
+    const behavior = buildBehavior(route, headers, index)
+    behaviors.push(behavior)
+  }
+  return behaviors
+}
+
+function buildBehavior(route: string, headers: string[], index: number): Behavior {
   const routeRequestPolicy = new aws.cloudfront.OriginRequestPolicy(
-    registerName(`RouteRequestPolicy (${route})`),
+    registerName(`RouteRequestPolicy${index}`),
     {
       cookiesConfig: {
         cookieBehavior: 'none',

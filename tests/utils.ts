@@ -8,10 +8,19 @@ import { Mocks } from '@pulumi/pulumi/runtime'
 
 export class MyMocks implements Mocks {
   public resources: { [key: string]: Record<string, any> } = {}
+  private noNameTest: string[] = [
+    'aws:route53/record:Record',
+    'aws:s3/bucketObject:BucketObject'
+  ]
   newResource(args: pulumi.runtime.MockResourceArgs): {
     id: string | undefined
     state: Record<string, any>
   } {
+    console.log(args.type)
+    
+    if (!validName(args.name) && !this.noNameTest.includes(args.type)) {
+      throw Error(`'${args.name}' is not a valid value for the name field`)
+    }
     const id = `${args.name}-id`
     const outputs = {
       id: id,
@@ -49,6 +58,13 @@ export class MyMocks implements Mocks {
     }
     return result
   }
+}
+
+export function validName(name: string): boolean {
+  console.log(name)
+  const regex_valid = new RegExp('^[A-Za-z0-9-]*(?<!-)$')
+  const regex_double = new RegExp('--')
+  return regex_valid.test(name) && !(regex_double.test(name))
 }
 
 // Convert a pulumi.Output to a promise of the same type.
