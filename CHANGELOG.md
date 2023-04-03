@@ -1,3 +1,11 @@
+## [1.0.8](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.0.7...v1.0.8) (2023-04-03)
+
+
+### Bug Fixes
+
+* fix duplicate name for Options handler RPA ([9e20f77](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/9e20f77bb9ee0deb0ed2ecdb7d509c150567a318))
+* unit test destroy script and replace shebang ([7418a49](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/7418a492fecd67fb2dc8ab8c34f6542e88e84654))
+
 ## [1.0.7](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.0.6...v1.0.7) (2023-04-03)
 
 
