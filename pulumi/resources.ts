@@ -6,7 +6,6 @@ import * as aws from '@pulumi/aws'
 import * as pulumi from '@pulumi/pulumi'
 import { local } from '@pulumi/command'
 import { DotenvConfigOutput } from 'dotenv'
-import { hashElement } from 'folder-hash'
 
 import { NameRegister } from './utils'
 
@@ -582,7 +581,8 @@ export function buildInvalidator(
 
   const pathHashProvider: pulumi.dynamic.ResourceProvider = {
     async create(inputs: PathHashInputs) {
-      const pathHash = await hashElement(inputs.path)
+      const folderHash = await import('folder-hash')
+      const pathHash = await folderHash.hashElement(inputs.path)
       return { id: inputs.path, outs: { hash: pathHash.toString() } }
     },
     async diff(
@@ -594,7 +594,8 @@ export function buildInvalidator(
       let changes = true
 
       const oldHash = previousOutput.hash
-      const newHash = await hashElement(news.path)
+      const folderHash = await import('folder-hash')
+      const newHash = await folderHash.hashElement(news.path)
 
       if (oldHash === newHash.toString()) {
         changes = false
@@ -607,7 +608,8 @@ export function buildInvalidator(
       }
     },
     async update(id, olds: PathHashInputs, news: PathHashInputs) {
-      const pathHash = await hashElement(news.path)
+      const folderHash = await import('folder-hash')
+      const pathHash = await folderHash.hashElement(news.path)
       return { outs: { hash: pathHash.toString() } }
     },
   }
