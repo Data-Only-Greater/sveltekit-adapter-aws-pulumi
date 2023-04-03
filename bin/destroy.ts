@@ -20,8 +20,19 @@ export async function main(args: string[]): Promise<void> {
     artifactPath,
     '.adapterprops.json'
   )
-
-  const adapterProps: AWSAdapterProps = await import(propsPath)
+  
+  const require = createRequire(import.meta.url)
+  let adapterProps: AWSAdapterProps
+  
+  try {
+    adapterProps = require(propsPath)
+  } catch (error: any) {
+    if (error.message.includes('Cannot find module')) {
+      return
+    } else {
+      throw(error)
+    }
+  }
 
   spawnSync('pulumi', ['destroy', '-f', '-s', adapterProps.stackName!, '-y'], {
     cwd: adapterProps.pulumiPath,
