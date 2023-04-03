@@ -1,3 +1,10 @@
+## [1.0.7](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.0.6...v1.0.7) (2023-04-03)
+
+
+### Bug Fixes
+
+* ensure OriginRequestPolicy names are valid ([c80ec19](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/c80ec19c68519e7c92805c3a225f9e7bcd8b8f5c))
+
 ## [1.0.6](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.0.5...v1.0.6) (2023-04-01)
 
 
