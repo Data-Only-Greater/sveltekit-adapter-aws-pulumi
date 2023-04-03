@@ -46,7 +46,6 @@ describe('bin/destroy.ts', () => {
     const argv = ['node', 'destroy']
     await destroy.main(argv)
     
-    expect(fs.existsSync(buildDir)).toBe(false)
     fs.rmSync(tmpDir, { recursive: true })
 
     let spawnSyncMock = <any>spawnSync
@@ -79,7 +78,7 @@ describe('bin/destroy.ts', () => {
     const argv = ['node', 'destroy', tmpDir]
     await destroy.main(argv)
 
-    expect(fs.existsSync(tmpDir)).toBe(false)
+    fs.rmSync(tmpDir, { recursive: true })
 
     let spawnSyncMock = <any>spawnSync
     const args = spawnSyncMock.mock.calls[0]

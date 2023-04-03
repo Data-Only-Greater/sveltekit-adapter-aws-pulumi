@@ -39,8 +39,6 @@ export async function main(args: string[]): Promise<void> {
     env: process.env,
   })
   
-  fs.rmSync(absArtifactPath, { recursive: true, force: true })
-  
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
