@@ -33,7 +33,7 @@ export async function main(args: string[]): Promise<void> {
     }
   }
 
-  spawnSync('pulumi', ['destroy', '-f', '-s', adapterProps.stackName!, '-y'], {
+  spawnSync('pulumi', ['destroy', '-f', '-s', adapterProps.stackName!, '-y', '--refresh'], {
     cwd: adapterProps.pulumiPath,
     stdio: [process.stdin, process.stdout, process.stderr],
     env: process.env,
