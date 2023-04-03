@@ -1,3 +1,17 @@
+# [1.1.0](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.0.8...v1.1.0) (2023-04-03)
+
+
+### Bug Fixes
+
+* fix method for loading adapterprops in destroy script ([8a38ce5](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/8a38ce5d362bb5127110e0f266c14508cda5a0ae))
+* fix serialization of folder-hash for invalidation resource ([25f8cd6](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/25f8cd689baff098d684665886606fe8283d988b))
+* try to fix failure to remove build dir on linux ([4d1d988](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/4d1d98876e8dc13ca7eeb5e740c61b11ac9a59ed))
+
+
+### Features
+
+* remove build directory after destroy ([b6bf67f](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/b6bf67febf26e73d654b9304bb34adb9b2b90853))
+
 ## [1.0.8](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.0.7...v1.0.8) (2023-04-03)
 
 
