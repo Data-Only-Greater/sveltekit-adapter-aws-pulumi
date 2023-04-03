@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 
+import * as fs from 'fs'
 import * as path from 'path'
 import { fileURLToPath } from 'url'
 import { spawnSync } from 'child_process'
+import { createRequire } from 'node:module';
 
 import parseArgs from 'minimist'
 
@@ -39,6 +41,9 @@ export async function main(args: string[]): Promise<void> {
     stdio: [process.stdin, process.stdout, process.stderr],
     env: process.env,
   })
+  
+  fs.rmSync(artifactPath, { recursive: true, force: true })
+  
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

@@ -45,7 +45,8 @@ describe('bin/destroy.ts', () => {
 
     const argv = ['node', 'destroy']
     await destroy.main(argv)
-
+    
+    expect(fs.existsSync(buildDir)).toBe(false)
     fs.rmSync(tmpDir, { recursive: true })
 
     let spawnSyncMock = <any>spawnSync
@@ -78,7 +79,7 @@ describe('bin/destroy.ts', () => {
     const argv = ['node', 'destroy', tmpDir]
     await destroy.main(argv)
 
-    fs.rmSync(tmpDir, { recursive: true })
+    expect(fs.existsSync(tmpDir)).toBe(false)
 
     let spawnSyncMock = <any>spawnSync
     const args = spawnSyncMock.mock.calls[0]
@@ -94,4 +95,16 @@ describe('bin/destroy.ts', () => {
       ])
     )
   })
+  
+  it('main (no args or build)', async () => {
+    const tmpDir = getTempDir()
+    const spy = vi.spyOn(process, 'cwd')
+    spy.mockReturnValue(tmpDir)
+    
+    const argv = ['node', 'destroy']
+    await destroy.main(argv)
+    
+    fs.rmSync(tmpDir, { recursive: true })
+  })
+  
 })
