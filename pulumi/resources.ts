@@ -216,6 +216,9 @@ export function buildCDN(
   FQDN?: string,
   certificateArn?: pulumi.Input<string>
 ): aws.cloudfront.Distribution {
+  
+  const indexRoute: boolean = routes.includes('index.html')
+  
   const originAccessIdentity = new aws.cloudfront.OriginAccessIdentity(
     registerName('OriginAccessIdentity'),
     {
@@ -259,6 +262,7 @@ export function buildCDN(
   const distribution = new aws.cloudfront.Distribution(
     registerName('CloudFrontDistribution'),
     {
+      enabled: true,
       origins: [
         {
           originId: 'httpOrigin',
@@ -279,8 +283,8 @@ export function buildCDN(
         },
       ],
       aliases: FQDN ? [FQDN] : undefined,
+      defaultRootObject: indexRoute ? "index.html" : undefined,
       priceClass: 'PriceClass_100',
-      enabled: true,
       viewerCertificate: FQDN
         ? {
             // Per AWS, ACM certificate must be in the us-east-1 region.
