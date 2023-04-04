@@ -37,11 +37,9 @@ export function buildServer(
   iamForLambda: aws.iam.Role,
   serverPath: string,
   memorySize: number,
-  environment: DotenvConfigOutput
-): {
-  httpApi: aws.apigatewayv2.Api
-  defaultRoute: aws.apigatewayv2.Route
-} {
+  environment: DotenvConfigOutput,
+  allowedOrigins: (string | pulumi.Output<string>)[]
+): aws.lambda.FunctionUrl {
   const RPA = new aws.iam.RolePolicyAttachment(
     registerName('ServerRPABasicExecutionRole'),
     {
@@ -56,7 +54,7 @@ export function buildServer(
       code: new pulumi.asset.FileArchive(serverPath),
       role: iamForLambda.arn,
       handler: 'index.handler',
-      runtime: 'nodejs16.x',
+      runtime: 'nodejs18.x',
       timeout: 900,
       memorySize: memorySize,
       environment: {
@@ -67,43 +65,48 @@ export function buildServer(
     }
   )
 
-  const httpApi = new aws.apigatewayv2.Api(registerName('API'), {
-    protocolType: 'HTTP',
-  })
-
-  const serverPermission = new aws.lambda.Permission(
-    registerName('ServerPermission'),
-    {
-      action: 'lambda:InvokeFunction',
-      principal: 'apigateway.amazonaws.com',
-      function: serverHandler,
-      sourceArn: pulumi.interpolate`${httpApi.executionArn}/*/*`,
+  const serverURL = new aws.lambda.FunctionUrl("LambdaServerURL", {
+    functionName: serverHandler.arn,
+    authorizationType: "NONE",
+    cors: {
+        allowCredentials: true,
+        allowOrigins: allowedOrigins,
+        allowMethods: ["*"],
+        allowHeaders: ["*"],
+        maxAge: 86400,
     },
-    { dependsOn: [httpApi, serverHandler] }
-  )
+  });
 
-  const serverIntegration = new aws.apigatewayv2.Integration(
-    registerName('ServerIntegration'),
+  return serverURL
+
+}
+
+export function buildRouter(
+  iamForLambda: aws.iam.Role,
+  routerPath: string,
+  memorySize: number,
+): aws.lambda.Function {
+  const RPA = new aws.iam.RolePolicyAttachment(
+    registerName('RouterRPABasicExecutionRole'),
     {
-      apiId: httpApi.id,
-      integrationType: 'AWS_PROXY',
-      integrationUri: serverHandler.arn,
-      integrationMethod: 'POST',
-      payloadFormatVersion: '1.0',
+      role: iamForLambda.name,
+      policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole,
     }
   )
 
-  const defaultRoute = new aws.apigatewayv2.Route(
-    registerName('DefaultRoute'),
+  const routerHandler = new aws.lambda.Function(
+    registerName('LambdaRouterFunctionHandler'),
     {
-      apiId: httpApi.id,
-      routeKey: '$default',
-      target: pulumi.interpolate`integrations/${serverIntegration.id}`,
-    },
-    { dependsOn: [serverIntegration] }
+      code: new pulumi.asset.FileArchive(routerPath),
+      role: iamForLambda.arn,
+      handler: 'index.handler',
+      runtime: 'nodejs18.x',
+      memorySize: 128,
+    }
   )
 
-  return { httpApi, defaultRoute }
+  return routerHandler
+
 }
 
 export function validateCertificate(
@@ -156,10 +159,12 @@ export function validateCertificate(
 }
 
 export function buildStatic(
+  bucketName: string,
   staticPath: string,
   prerenderedPath: string
 ): aws.s3.Bucket {
   const bucket = new aws.s3.Bucket(registerName('StaticContentBucket'), {
+    bucket: bucketName,
     acl: 'private',
     forceDestroy: true,
   })
@@ -208,7 +213,9 @@ export function uploadStatic(dirPath: string, bucket: aws.s3.Bucket) {
 }
 
 export function buildCDN(
-  httpApi: aws.apigatewayv2.Api,
+  
+  serverFunctionURL: aws.lambda.FunctionUrl,
+  routerFunction: aws.lambda.Function,
   bucket: aws.s3.Bucket,
   routes: string[],
   serverHeaders: string[],
@@ -216,8 +223,6 @@ export function buildCDN(
   FQDN?: string,
   certificateArn?: pulumi.Input<string>
 ): aws.cloudfront.Distribution {
-  
-  const indexRoute: boolean = routes.includes('index.html')
   
   const originAccessIdentity = new aws.cloudfront.OriginAccessIdentity(
     registerName('OriginAccessIdentity'),
@@ -244,10 +249,6 @@ export function buildCDN(
     }
   )
 
-  const disabledCachePolicy = aws.cloudfront.getCachePolicyOutput({
-    name: 'Managed-CachingDisabled',
-  })
-
   const oac = new aws.cloudfront.OriginAccessControl(
     registerName('CloudFrontOriginAccessControl'),
     {
@@ -265,25 +266,26 @@ export function buildCDN(
       enabled: true,
       origins: [
         {
-          originId: 'httpOrigin',
-          domainName: httpApi.apiEndpoint.apply(
+          originId: 'default',
+          domainName: serverFunctionURL.functionUrl.apply(
             (endpoint) => endpoint.split('://')[1]
           ),
+          customHeaders: [
+            {
+              name: 's3-host',
+              value: bucket.bucketDomainName
+            }
+          ],
           customOriginConfig: {
             httpPort: 80,
             httpsPort: 443,
             originProtocolPolicy: 'https-only',
             originSslProtocols: ['SSLv3', 'TLSv1', 'TLSv1.1', 'TLSv1.2'],
           },
-        },
-        {
-          originId: 's3Origin',
-          domainName: bucket.bucketRegionalDomainName,
-          originAccessControlId: oac.id,
-        },
+          originAccessControlId: oac.id
+        }
       ],
       aliases: FQDN ? [FQDN] : undefined,
-      defaultRootObject: indexRoute ? "index.html" : undefined,
       priceClass: 'PriceClass_100',
       viewerCertificate: FQDN
         ? {
@@ -306,12 +308,16 @@ export function buildCDN(
           'POST',
           'PUT',
         ],
-        cachedMethods: ['GET', 'HEAD'],
+        cachedMethods: ['GET', 'HEAD', 'OPTIONS'],
+        lambdaFunctionAssociations: [
+          {
+            eventType: 'origin-request',
+            lambdaArn: routerFunction.arn,
+          }
+        ],
         originRequestPolicyId: defaultRequestPolicy.id,
-        cachePolicyId: disabledCachePolicy.apply((policy) => policy.id!),
-        targetOriginId: 'httpOrigin',
+        targetOriginId: 'default',
       },
-      orderedCacheBehaviors: buildBehaviors(routes, staticHeaders),
       restrictions: {
         geoRestriction: {
           restrictionType: 'none',

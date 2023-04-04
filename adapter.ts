@@ -49,9 +49,9 @@ export function adapter({
     async adapt(builder: any) {
       const {
         server_directory,
+        edge_directory,
         static_directory,
         prerendered_directory,
-        routes,
       } = await prepAdapter(builder, artifactPath, esbuildOptions)
 
       if (autoDeploy) {
@@ -62,9 +62,9 @@ export function adapter({
         const default_env: any = {
           PROJECT_PATH: join(process.cwd(), '.env'),
           SERVER_PATH: join(process.cwd(), server_directory),
+          EDGE_PATH: join(process.cwd(), edge_directory),
           STATIC_PATH: join(process.cwd(), static_directory),
           PRERENDERED_PATH: join(process.cwd(), prerendered_directory),
-          ROUTES: routes,
           SERVER_HEADERS: serverHeaders,
           STATIC_HEADERS: staticHeaders,
           FQDN,
