@@ -14,6 +14,10 @@ let registerName = (name: string): string => {
   return nameRegister.registerName(name)
 }
 
+const eastRegion = new aws.Provider(registerName('ProviderEast'), {
+  region: 'us-east-1',
+})
+
 export function getLambdaRole(): aws.iam.Role {
   return new aws.iam.Role(registerName('IamForLambda'), {
     assumeRolePolicy: `{
@@ -22,7 +26,10 @@ export function getLambdaRole(): aws.iam.Role {
             {
               "Action": "sts:AssumeRole",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": [
+                  "lambda.amazonaws.com",
+                  "edgelambda.amazonaws.com"
+                ]
               },
               "Effect": "Allow",
               "Sid": ""
@@ -101,7 +108,9 @@ export function buildRouter(
       handler: 'index.handler',
       runtime: 'nodejs18.x',
       memorySize: 128,
-    }
+      publish: true
+    },
+    { provider: eastRegion }
   )
 
   return routerHandler
@@ -115,10 +124,6 @@ export function validateCertificate(
   if (!FQDN.includes(domainName)) {
     throw new Error('FQDN must contain domainName')
   }
-
-  let eastRegion = new aws.Provider(registerName('ProviderEast'), {
-    region: 'us-east-1',
-  })
 
   const certificate = new aws.acm.Certificate(
     registerName('Certificate'),
@@ -162,7 +167,7 @@ export function buildStatic(
   prerenderedPath: string
 ): aws.s3.Bucket {
   const bucket = new aws.s3.Bucket(registerName('StaticContentBucket'), {
-    acl: 'private',
+    acl: 'public-read',
     forceDestroy: true,
   })
   exports.uploadStatic(staticPath, bucket)
@@ -253,7 +258,11 @@ export function buildCDN(
       signingProtocol: 'sigv4',
     }
   )
-
+  
+  const optimizedCachePolicy = aws.cloudfront.getCachePolicyOutput({
+    name: 'Managed-CachingOptimized',
+  })
+  
   const distribution = new aws.cloudfront.Distribution(
     registerName('CloudFrontDistribution'),
     {
@@ -262,7 +271,7 @@ export function buildCDN(
         {
           originId: 'default',
           domainName: serverFunctionURL.functionUrl.apply(
-            (endpoint) => endpoint.split('://')[1]
+            (endpoint) => endpoint.split('://')[1].slice(0, -1)
           ),
           customHeaders: [
             {
@@ -276,7 +285,6 @@ export function buildCDN(
             originProtocolPolicy: 'https-only',
             originSslProtocols: ['SSLv3', 'TLSv1', 'TLSv1.1', 'TLSv1.2'],
           },
-          originAccessControlId: oac.id
         }
       ],
       aliases: FQDN ? [FQDN] : undefined,
@@ -306,10 +314,13 @@ export function buildCDN(
         lambdaFunctionAssociations: [
           {
             eventType: 'origin-request',
-            lambdaArn: routerFunction.arn,
+            lambdaArn: pulumi.all([routerFunction.arn, routerFunction.version]).apply(([arn, version]) => {
+              return `${arn}:${version}`
+            })
           }
         ],
         originRequestPolicyId: defaultRequestPolicy.id,
+        cachePolicyId: optimizedCachePolicy.apply((policy) => policy.id!),
         targetOriginId: 'default',
       },
       restrictions: {
@@ -325,19 +336,13 @@ export function buildCDN(
       {
         principals: [
           {
-            type: 'Service',
-            identifiers: ['cloudfront.amazonaws.com'],
+            type: 'AWS',
+            identifiers: ['*'],
           },
         ],
         actions: ['s3:GetObject'],
-        resources: [pulumi.interpolate`${bucket.arn}/\*`],
-        conditions: [
-          {
-            test: 'StringEquals',
-            variable: 'AWS:SourceArn',
-            values: [distribution.arn],
-          },
-        ],
+        effect: 'Allow',
+        resources: [pulumi.interpolate`${bucket.arn}/\*`, bucket.arn],
       },
       {
         principals: [
