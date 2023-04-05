@@ -38,7 +38,7 @@ export function buildServer(
   serverPath: string,
   memorySize: number,
   environment: DotenvConfigOutput,
-  allowedOrigins: (string | pulumi.Output<string>)[]
+  allowedOrigins: (string | pulumi.Output<string>)[] = ['*']
 ): aws.lambda.FunctionUrl {
   const RPA = new aws.iam.RolePolicyAttachment(
     registerName('ServerRPABasicExecutionRole'),
@@ -84,7 +84,6 @@ export function buildServer(
 export function buildRouter(
   iamForLambda: aws.iam.Role,
   routerPath: string,
-  memorySize: number,
 ): aws.lambda.Function {
   const RPA = new aws.iam.RolePolicyAttachment(
     registerName('RouterRPABasicExecutionRole'),
@@ -159,12 +158,10 @@ export function validateCertificate(
 }
 
 export function buildStatic(
-  bucketName: string,
   staticPath: string,
   prerenderedPath: string
 ): aws.s3.Bucket {
   const bucket = new aws.s3.Bucket(registerName('StaticContentBucket'), {
-    bucket: bucketName,
     acl: 'private',
     forceDestroy: true,
   })
@@ -213,13 +210,10 @@ export function uploadStatic(dirPath: string, bucket: aws.s3.Bucket) {
 }
 
 export function buildCDN(
-  
   serverFunctionURL: aws.lambda.FunctionUrl,
   routerFunction: aws.lambda.Function,
   bucket: aws.s3.Bucket,
-  routes: string[],
   serverHeaders: string[],
-  staticHeaders: string[],
   FQDN?: string,
   certificateArn?: pulumi.Input<string>
 ): aws.cloudfront.Distribution {
@@ -377,61 +371,6 @@ export function buildCDN(
   return distribution
 }
 
-interface Behavior {
-  pathPattern: string
-  allowedMethods: string[]
-  cachedMethods: string[]
-  targetOriginId: string
-  originRequestPolicyId: pulumi.Output<string>
-  cachePolicyId: pulumi.Output<string>
-  viewerProtocolPolicy: string
-}
-
-function buildBehaviors(routes: string[], headers: string[]): Behavior[] {
-  const behaviors: Behavior[] = []
-  for (const [index, route] of routes.entries()) {
-    const behavior = buildBehavior(route, headers, index)
-    behaviors.push(behavior)
-  }
-  return behaviors
-}
-
-function buildBehavior(
-  route: string,
-  headers: string[],
-  index: number
-): Behavior {
-  const routeRequestPolicy = new aws.cloudfront.OriginRequestPolicy(
-    registerName(`RouteRequestPolicy${index}`),
-    {
-      cookiesConfig: {
-        cookieBehavior: 'none',
-      },
-      headersConfig: {
-        headerBehavior: 'whitelist',
-        headers: {
-          items: headers,
-        },
-      },
-      queryStringsConfig: {
-        queryStringBehavior: 'none',
-      },
-    }
-  )
-  const optimizedCachePolicy = aws.cloudfront.getCachePolicyOutput({
-    name: 'Managed-CachingOptimized',
-  })
-  return {
-    pathPattern: route,
-    allowedMethods: ['GET', 'HEAD', 'OPTIONS'],
-    cachedMethods: ['GET', 'HEAD', 'OPTIONS'],
-    targetOriginId: 's3Origin',
-    originRequestPolicyId: routeRequestPolicy.id,
-    cachePolicyId: optimizedCachePolicy.apply((policy) => policy.id!),
-    viewerProtocolPolicy: 'redirect-to-https',
-  }
-}
-
 // Creates a new Route53 DNS record pointing the domain to the CloudFront
 // distribution.
 export function createAliasRecord(
@@ -477,99 +416,6 @@ export function getDomainAndSubdomain(domain: string): {
     // Trailing "." to canonicalize domain.
     parentDomain: parts.join('.') + '.',
   }
-}
-
-export function buildServerOptionsHandler(
-  iamForLambda: aws.iam.Role,
-  httpApi: aws.apigatewayv2.Api,
-  allowedOrigins: (string | pulumi.Output<string>)[]
-): aws.apigatewayv2.Route {
-  const RPA = new aws.iam.RolePolicyAttachment(
-    registerName('OptionsRPABasicExecutionRole'),
-    {
-      role: iamForLambda.name,
-      policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole,
-    }
-  )
-
-  const optionsHandler = new aws.lambda.Function(
-    registerName('OptionsLambda'),
-    {
-      role: iamForLambda.arn,
-      handler: 'index.handler',
-      runtime: 'nodejs16.x',
-      code: new pulumi.asset.AssetArchive({
-        'index.js': pulumi.all(allowedOrigins).apply((x) => {
-          return new pulumi.asset.StringAsset(
-            `exports.handler = async(event) => {
-          const allowedOrigins = ${JSON.stringify(x)};
-          var headers = {'Access-Control-Allow-Methods': '*',
-                         'Access-Control-Allow-Headers': '*',
-                         'Access-Control-Max-Age': 86400,
-                         'Connection': 'keep-alive'};
-          if (allowedOrigins.includes(event.headers.origin)) {
-            headers['Access-Control-Allow-Origin'] = event.headers.origin;
-          }
-          const response = {
-            statusCode: 204,
-            headers: headers,
-          };
-          return response;
-          }`
-          )
-        }),
-      }),
-    }
-  )
-
-  const optionsPermission = new aws.lambda.Permission(
-    registerName('OptionsPermission'),
-    {
-      action: 'lambda:InvokeFunction',
-      principal: 'apigateway.amazonaws.com',
-      function: optionsHandler,
-      sourceArn: pulumi.interpolate`${httpApi.executionArn}/*/*`,
-    },
-    { dependsOn: [httpApi, optionsHandler] }
-  )
-
-  const optionsIntegration = new aws.apigatewayv2.Integration(
-    registerName('OptionsIntegration'),
-    {
-      apiId: httpApi.id,
-      integrationType: 'AWS_PROXY',
-      integrationUri: optionsHandler.arn,
-      integrationMethod: 'POST',
-      payloadFormatVersion: '1.0',
-    }
-  )
-
-  const optionsRoute = new aws.apigatewayv2.Route(
-    registerName('OptionsRoute'),
-    {
-      apiId: httpApi.id,
-      routeKey: 'OPTIONS /{proxy+}',
-      target: pulumi.interpolate`integrations/${optionsIntegration.id}`,
-    },
-    { dependsOn: [optionsIntegration] }
-  )
-
-  return optionsRoute
-}
-
-export function deployServer(
-  httpApi: aws.apigatewayv2.Api,
-  apiRoutes: aws.apigatewayv2.Route[]
-) {
-  const stage = new aws.apigatewayv2.Stage(
-    registerName('ApiStage'),
-    {
-      name: '$default',
-      apiId: httpApi.id,
-      autoDeploy: true,
-    },
-    { dependsOn: apiRoutes }
-  )
 }
 
 export function buildInvalidator(

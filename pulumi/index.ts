@@ -3,12 +3,11 @@ import * as pulumi from '@pulumi/pulumi'
 import {
   getLambdaRole,
   buildServer,
+  buildRouter,
   validateCertificate,
   buildStatic,
   buildCDN,
   createAliasRecord,
-  buildServerOptionsHandler,
-  deployServer,
   buildInvalidator,
 } from './resources'
 import { getEnvironment } from './utils'
@@ -26,12 +25,13 @@ const staticHeaders = process.env.STATIC_HEADERS?.split(',') || []
 
 const iamForLambda = getLambdaRole()
 const environment = getEnvironment(projectPath)
-const { httpApi, defaultRoute } = buildServer(
+const serverURL = buildServer(
   iamForLambda,
   serverPath,
   memorySize,
   environment
 )
+const routerHandler = buildRouter(iamForLambda, edgePath)
 
 let certificateArn: pulumi.Input<string> | undefined
 
@@ -41,11 +41,10 @@ if (process.env.FQDN) {
 
 const bucket = buildStatic(staticPath, prerenderedPath)
 const distribution = buildCDN(
-  httpApi,
+  serverURL,
+  routerHandler,
   bucket,
-  routes,
   serverHeaders,
-  staticHeaders,
   process.env.FQDN,
   certificateArn
 )
@@ -59,12 +58,6 @@ var allowedOrigins: (string | pulumi.Output<string>)[] = [
 ]
 process.env.FQDN && allowedOrigins.push(`https://${process.env.FQDN}`)
 
-const optionsRoute = buildServerOptionsHandler(
-  iamForLambda,
-  httpApi,
-  allowedOrigins
-)
-deployServer(httpApi, [defaultRoute, optionsRoute])
 buildInvalidator(distribution, staticPath, prerenderedPath)
 
 export const appUrl = process.env.FQDN
