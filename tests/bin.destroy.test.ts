@@ -45,7 +45,7 @@ describe('bin/destroy.ts', () => {
 
     const argv = ['node', 'destroy']
     await destroy.main(argv)
-    
+
     fs.rmSync(tmpDir, { recursive: true })
 
     let spawnSyncMock = <any>spawnSync
@@ -94,16 +94,15 @@ describe('bin/destroy.ts', () => {
       ])
     )
   })
-  
+
   it('main (no args or build)', async () => {
     const tmpDir = getTempDir()
     const spy = vi.spyOn(process, 'cwd')
     spy.mockReturnValue(tmpDir)
-    
+
     const argv = ['node', 'destroy']
     await destroy.main(argv)
-    
+
     fs.rmSync(tmpDir, { recursive: true })
   })
-  
 })

@@ -5,9 +5,8 @@ import * as path from 'path'
 import * as aws from '@pulumi/aws'
 import * as pulumi from '@pulumi/pulumi'
 import { local } from '@pulumi/command'
-import { DotenvConfigOutput } from 'dotenv'
 
-import { NameRegister } from './utils'
+import { NameRegister } from '../utils'
 
 const nameRegister = NameRegister.getInstance()
 let registerName = (name: string): string => {
@@ -19,7 +18,7 @@ const eastRegion = new aws.Provider(registerName('ProviderEast'), {
 })
 
 export function getLambdaRole(): aws.iam.Role {
-  return new aws.iam.Role(registerName('IamForLambda'), {
+  const iamForLambda = new aws.iam.Role(registerName('IamForLambda'), {
     assumeRolePolicy: `{
           "Version": "2012-10-17",
           "Statement": [
@@ -38,15 +37,7 @@ export function getLambdaRole(): aws.iam.Role {
         }
         `,
   })
-}
 
-export function buildServer(
-  iamForLambda: aws.iam.Role,
-  serverPath: string,
-  memorySize: number,
-  environment: DotenvConfigOutput,
-  allowedOrigins: (string | pulumi.Output<string>)[] = ['*']
-): aws.lambda.FunctionUrl {
   const RPA = new aws.iam.RolePolicyAttachment(
     registerName('ServerRPABasicExecutionRole'),
     {
@@ -55,51 +46,13 @@ export function buildServer(
     }
   )
 
-  const serverHandler = new aws.lambda.Function(
-    registerName('LambdaServerFunctionHandler'),
-    {
-      code: new pulumi.asset.FileArchive(serverPath),
-      role: iamForLambda.arn,
-      handler: 'index.handler',
-      runtime: 'nodejs18.x',
-      timeout: 900,
-      memorySize: memorySize,
-      environment: {
-        variables: {
-          ...environment.parsed,
-        } as any,
-      },
-    }
-  )
-
-  const serverURL = new aws.lambda.FunctionUrl("LambdaServerURL", {
-    functionName: serverHandler.arn,
-    authorizationType: "NONE",
-    cors: {
-        allowCredentials: true,
-        allowOrigins: allowedOrigins,
-        allowMethods: ["*"],
-        allowHeaders: ["*"],
-        maxAge: 86400,
-    },
-  });
-
-  return serverURL
-
+  return iamForLambda
 }
 
 export function buildRouter(
   iamForLambda: aws.iam.Role,
-  routerPath: string,
+  routerPath: string
 ): aws.lambda.Function {
-  const RPA = new aws.iam.RolePolicyAttachment(
-    registerName('RouterRPABasicExecutionRole'),
-    {
-      role: iamForLambda.name,
-      policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole,
-    }
-  )
-
   const routerHandler = new aws.lambda.Function(
     registerName('LambdaRouterFunctionHandler'),
     {
@@ -108,13 +61,12 @@ export function buildRouter(
       handler: 'index.handler',
       runtime: 'nodejs18.x',
       memorySize: 128,
-      publish: true
+      publish: true,
     },
     { provider: eastRegion }
   )
 
   return routerHandler
-
 }
 
 export function validateCertificate(
@@ -215,21 +167,12 @@ export function uploadStatic(dirPath: string, bucket: aws.s3.Bucket) {
 }
 
 export function buildCDN(
-  serverFunctionURL: aws.lambda.FunctionUrl,
   routerFunction: aws.lambda.Function,
   bucket: aws.s3.Bucket,
   serverHeaders: string[],
   FQDN?: string,
   certificateArn?: pulumi.Input<string>
 ): aws.cloudfront.Distribution {
-  
-  const originAccessIdentity = new aws.cloudfront.OriginAccessIdentity(
-    registerName('OriginAccessIdentity'),
-    {
-      comment: 'this is needed to setup s3 polices and make s3 not public.',
-    }
-  )
-
   const defaultRequestPolicy = new aws.cloudfront.OriginRequestPolicy(
     registerName('DefaultRequestPolicy'),
     {
@@ -258,11 +201,14 @@ export function buildCDN(
       signingProtocol: 'sigv4',
     }
   )
-  
+
   const optimizedCachePolicy = aws.cloudfront.getCachePolicyOutput({
     name: 'Managed-CachingOptimized',
   })
-  
+
+  // serverFunctionURL.functionUrl.apply(
+  //   (endpoint) => endpoint.split('://')[1].slice(0, -1)
+
   const distribution = new aws.cloudfront.Distribution(
     registerName('CloudFrontDistribution'),
     {
@@ -270,22 +216,9 @@ export function buildCDN(
       origins: [
         {
           originId: 'default',
-          domainName: serverFunctionURL.functionUrl.apply(
-            (endpoint) => endpoint.split('://')[1].slice(0, -1)
-          ),
-          customHeaders: [
-            {
-              name: 's3-host',
-              value: bucket.bucketDomainName
-            }
-          ],
-          customOriginConfig: {
-            httpPort: 80,
-            httpsPort: 443,
-            originProtocolPolicy: 'https-only',
-            originSslProtocols: ['SSLv3', 'TLSv1', 'TLSv1.1', 'TLSv1.2'],
-          },
-        }
+          domainName: bucket.bucketRegionalDomainName,
+          originAccessControlId: oac.id,
+        },
       ],
       aliases: FQDN ? [FQDN] : undefined,
       priceClass: 'PriceClass_100',
@@ -314,10 +247,12 @@ export function buildCDN(
         lambdaFunctionAssociations: [
           {
             eventType: 'origin-request',
-            lambdaArn: pulumi.all([routerFunction.arn, routerFunction.version]).apply(([arn, version]) => {
-              return `${arn}:${version}`
-            })
-          }
+            lambdaArn: pulumi
+              .all([routerFunction.arn, routerFunction.version])
+              .apply(([arn, version]) => {
+                return `${arn}:${version}`
+              }),
+          },
         ],
         originRequestPolicyId: defaultRequestPolicy.id,
         cachePolicyId: optimizedCachePolicy.apply((policy) => policy.id!),
@@ -336,13 +271,19 @@ export function buildCDN(
       {
         principals: [
           {
-            type: 'AWS',
-            identifiers: ['*'],
+            type: 'Service',
+            identifiers: ['cloudfront.amazonaws.com'],
           },
         ],
         actions: ['s3:GetObject'],
-        effect: 'Allow',
-        resources: [pulumi.interpolate`${bucket.arn}/\*`, bucket.arn],
+        resources: [pulumi.interpolate`${bucket.arn}/\*`],
+        conditions: [
+          {
+            test: 'StringEquals',
+            variable: 'AWS:SourceArn',
+            values: [distribution.arn],
+          },
+        ],
       },
       {
         principals: [

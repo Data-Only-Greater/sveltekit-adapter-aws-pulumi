@@ -1,6 +1,6 @@
-name: sveltekit-aws-adapter
+name: sveltekit-aws-adapter-main
 runtime: nodejs
-description: SvelteKit adapter to deploy SvelteKit to AWS using Pulumi
+description: SvelteKit adapter to deploy SvelteKit to AWS using Pulumi (main stack)
 template:
   config:
     aws:region:

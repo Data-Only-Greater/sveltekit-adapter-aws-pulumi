@@ -20,9 +20,9 @@ This project contains a SvelteKit adapter to deploy SvelteKit to AWS using Pulum
 1. `npm install -D sveltekit-adapter-aws-pulumi`
 1. Edit **svelte.config.js** (see below)
 1. Set the following environment variables:
-    - PULUMI_ACCESS_TOKEN
-    - AWS_ACCESS_KEY_ID
-    - AWS_SECRET_ACCESS_KEY
+   - PULUMI_ACCESS_TOKEN
+   - AWS_ACCESS_KEY_ID
+   - AWS_SECRET_ACCESS_KEY
 
 ### Build
 
@@ -37,25 +37,25 @@ This project contains a SvelteKit adapter to deploy SvelteKit to AWS using Pulum
 **svelte.config.js**
 
 ```javascript
-import { adapter } from 'sveltekit-adapter-aws-pulumi';
-import preprocess from 'svelte-preprocess';
+import { adapter } from 'sveltekit-adapter-aws-pulumi'
+import preprocess from 'svelte-preprocess'
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-	preprocess: preprocess(),
-	kit: {
-		// adapter-auto only supports some environments, see https://kit.svelte.dev/docs/adapter-auto for a list.
-		// If your environment is not supported or you settled on a specific environment, switch out the adapter.
-		// See https://kit.svelte.dev/docs/adapters for more information about adapters.
-		adapter: adapter({
-			autoDeploy: true,
-			FQDN: 'sveltekit.applications.dog',
-			stackName: 'adapter-default-test'
-		}),
-	},
-};
+  preprocess: preprocess(),
+  kit: {
+    // adapter-auto only supports some environments, see https://kit.svelte.dev/docs/adapter-auto for a list.
+    // If your environment is not supported or you settled on a specific environment, switch out the adapter.
+    // See https://kit.svelte.dev/docs/adapters for more information about adapters.
+    adapter: adapter({
+      autoDeploy: true,
+      FQDN: 'sveltekit.applications.dog',
+      stackName: 'adapter-default-test',
+    }),
+  },
+}
 
-export default config;
+export default config
 ```
 
 ## Architecture

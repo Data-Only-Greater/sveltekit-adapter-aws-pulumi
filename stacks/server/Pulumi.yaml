@@ -1,0 +1,8 @@
+name: sveltekit-aws-adapter-server
+runtime: nodejs
+description: SvelteKit adapter to deploy SvelteKit to AWS using Pulumi (server stack)
+template:
+  config:
+    aws:region:
+      description: The AWS region to deploy into
+      default: us-east-2
