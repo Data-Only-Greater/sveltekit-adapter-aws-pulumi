@@ -131,12 +131,13 @@ export function adapter({
         }
 
         const mainStackUpResult = await mainStack.up({ onOutput: console.info })
-        const allowedOrigins = serverStack.getConfig('allowedOrigins')
+        const serverAllowedOrigins = await serverStack.getConfig('allowedOrigins')
+        const mainAllowedOrigins = JSON.stringify(mainStackUpResult.outputs.allowedOrigins.value)
         
-        if (!allowedOrigins) {
+        if (serverAllowedOrigins.value !== mainAllowedOrigins) {
           // Call the server stack setting the allowed origins
           await serverStack.setConfig('allowedOrigins', {
-            value: JSON.stringify(mainStackUpResult.outputs.allowedOrigins.value),
+            value: mainAllowedOrigins,
           })
 
           const serverStackUpUpdate = await serverStack.up({
