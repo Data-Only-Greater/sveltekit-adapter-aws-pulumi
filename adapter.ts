@@ -98,7 +98,7 @@ export function adapter({
         )
 
         // Setup main stack.
-        const mainPath = join(__dirname, 'stacks', 'server')
+        const mainPath = join(__dirname, 'stacks', 'main')
         const mainArgs: LocalProgramArgs = {
           stackName: stackName,
           workDir: mainPath,
@@ -131,15 +131,18 @@ export function adapter({
         }
 
         const mainStackUpResult = await mainStack.up({ onOutput: console.info })
+        const allowedOrigins = serverStack.getConfig('allowedOrigins')
+        
+        if (!allowedOrigins) {
+          // Call the server stack setting the allowed origins
+          await serverStack.setConfig('allowedOrigins', {
+            value: JSON.stringify(mainStackUpResult.outputs.allowedOrigins.value),
+          })
 
-        // Call the server stack setting the allowed origins
-        await serverStack.setConfig('allowedOrigins', {
-          value: JSON.stringify(mainStackUpResult.outputs.allowedOrigins.value),
-        })
-
-        const serverStackUpUpdate = await serverStack.up({
-          onOutput: console.info,
-        })
+          const serverStackUpUpdate = await serverStack.up({
+            onOutput: console.info,
+          })
+        }
 
         // Fix TS_NODE_IGNORE when package is installed to node_modules
         // if (pulumiPath === `${__dirname}/pulumi`) {

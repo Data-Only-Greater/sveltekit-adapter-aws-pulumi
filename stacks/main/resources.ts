@@ -58,7 +58,7 @@ export function buildRouter(
     {
       code: new pulumi.asset.FileArchive(routerPath),
       role: iamForLambda.arn,
-      handler: 'index.handler',
+      handler: 'router.handler',
       runtime: 'nodejs18.x',
       memorySize: 128,
       publish: true,
@@ -119,7 +119,7 @@ export function buildStatic(
   prerenderedPath: string
 ): aws.s3.Bucket {
   const bucket = new aws.s3.Bucket(registerName('StaticContentBucket'), {
-    acl: 'public-read',
+    acl: 'private',
     forceDestroy: true,
   })
   exports.uploadStatic(staticPath, bucket)

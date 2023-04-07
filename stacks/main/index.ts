@@ -17,7 +17,7 @@ const prerenderedPath = pulumiConfig.get('prerenderedPath')
 const FQDN = pulumiConfig.get('FQDN')
 const serverHeadersStr = pulumiConfig.get('serverHeaders')
 
-const [_, zoneName, ...MLDs] = FQDN || []
+const [_, zoneName, ...MLDs] = FQDN!.split('.') || []
 const domainName = [zoneName, ...MLDs].join('.')
 
 let serverHeaders: string[] = []
@@ -31,7 +31,8 @@ const routerHandler = buildRouter(iamForLambda, edgePath!)
 
 let certificateArn: pulumi.Input<string> | undefined
 
-if (process.env.FQDN) {
+
+if (FQDN) {
   certificateArn = validateCertificate(FQDN!, domainName)
 }
 
@@ -44,18 +45,18 @@ const distribution = buildCDN(
   certificateArn
 )
 
-if (process.env.FQDN) {
-  createAliasRecord(process.env.FQDN, distribution)
+if (FQDN) {
+  createAliasRecord(FQDN, distribution)
 }
 
 var getOrigins: (string | pulumi.Output<string>)[] = [
   pulumi.interpolate`https://${distribution.domainName}`,
 ]
-process.env.FQDN && getOrigins.push(`https://${process.env.FQDN}`)
+FQDN && getOrigins.push(`https://${FQDN}`)
 
 buildInvalidator(distribution, staticPath!, prerenderedPath!)
 
 export const allowedOrigins = getOrigins
-export const appUrl = process.env.FQDN
-  ? `https://${process.env.FQDN}`
+export const appUrl = FQDN
+  ? `https://${FQDN}`
   : pulumi.interpolate`https://${distribution.domainName}`

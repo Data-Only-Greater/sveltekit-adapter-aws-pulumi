@@ -19,8 +19,7 @@ if (memorySizeStr) {
 let optionsEnv: any = {}
 
 if (allowedOriginsStr) {
-  const allowedOrigins: string[] = JSON.parse(allowedOriginsStr)
-  optionsEnv['ALLOWED_ORIGINS'] = allowedOrigins
+  optionsEnv['ALLOWED_ORIGINS'] = allowedOriginsStr
 }
 
 const iamForLambda = getLambdaRole()
