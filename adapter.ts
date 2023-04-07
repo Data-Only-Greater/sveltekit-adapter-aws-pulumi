@@ -2,7 +2,7 @@ import { writeFileSync } from 'fs'
 import { join } from 'path'
 import * as url from 'url'
 
-import { LocalProgramArgs, LocalWorkspace } from '@pulumi/pulumi/automation'
+import { LocalProgramArgs, LocalWorkspace } from '@pulumi/pulumi/automation/index.js'
 import {
   buildServer,
   buildOptions,
@@ -14,7 +14,6 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 export interface AWSAdapterProps {
   artifactPath?: string
   autoDeploy?: boolean
-  pulumiPaths?: string[]
   stackName?: string
   serverHeaders?: string[]
   esbuildOptions?: any
@@ -22,13 +21,13 @@ export interface AWSAdapterProps {
   MEMORY_SIZE?: number
   zoneName?: string
   env?: { [key: string]: string }
+  pulumiPaths?: string[]
 }
 
 export function adapter({
   artifactPath = 'build',
   autoDeploy = false,
-  pulumiPaths = [],
-  stackName = 'sveltekit-adapter-aws',
+  stackName = 'dev',
   serverHeaders = [
     'Accept',
     'Accept-Charset',
@@ -44,6 +43,7 @@ export function adapter({
   MEMORY_SIZE,
   zoneName = 'us-east-2',
   env = {},
+  pulumiPaths = []
 }: AWSAdapterProps = {}) {
   /** @type {import('@sveltejs/kit').Adapter} */
   return {
@@ -65,7 +65,13 @@ export function adapter({
           stackName: stackName,
           workDir: serverPath,
         }
-        const serverStack = await LocalWorkspace.createOrSelectStack(serverArgs)
+        const serverStack = await LocalWorkspace.createOrSelectStack(
+          serverArgs,
+          {
+            envVars: {
+              'TS_NODE_IGNORE': '^(?!.*(sveltekit-adapter-aws-pulumi)).*'
+            }
+          })
 
         // Set the AWS region.
         await serverStack.setConfig("aws:region", { value: zoneName });
@@ -76,6 +82,7 @@ export function adapter({
           optionsPath: { value: options_directory },
           memorySizeStr: { value: String(MEMORY_SIZE) },
         })
+
 
         const serverStackUpResult = await serverStack.up({
           onOutput: console.info,
@@ -96,7 +103,13 @@ export function adapter({
           stackName: stackName,
           workDir: mainPath,
         }
-        const mainStack = await LocalWorkspace.createOrSelectStack(mainArgs)
+        const mainStack = await LocalWorkspace.createOrSelectStack(
+          mainArgs,
+          {
+            envVars: {
+              'TS_NODE_IGNORE': '^(?!.*(sveltekit-adapter-aws-pulumi)).*'
+            }
+          })
 
         // Set the AWS region.
         await mainStack.setConfig("aws:region", { value: zoneName });
