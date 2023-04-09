@@ -1,11 +1,43 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import prepAdapter from 'sveltekit-adapter-aws-base'
+
+import {
+  buildServer,
+  buildOptions,
+  buildRouter,
+} from 'sveltekit-adapter-aws-base'
 
 import { getTempDir } from './utils'
 
-vi.mock('child_process')
 vi.mock('sveltekit-adapter-aws-base')
+vi.mock('@pulumi/pulumi/automation/index.js', () => {
+  const Stack = {
+    setConfig: vi.fn(),
+    setAllConfig: vi.fn(),
+    getAllConfig: vi.fn(() => {return {}}),
+    up: vi.fn(() => {return {
+      outputs: {
+        serverDomain: {
+          value: 'mock'
+        },
+        optionsDomain: {
+          value: 'mock'
+        },
+        allowedOrigins: {
+          value: ['mock']
+        }
+      }
+    }
+  }),
+  }
+  const LocalWorkspace = {
+    createOrSelectStack: vi.fn(() => Stack)
+  }
+  
+  return {
+    LocalWorkspace
+  }
+})
 
 describe('adapter.ts', () => {
   let adapter: typeof import('../adapter')
@@ -16,14 +48,19 @@ describe('adapter.ts', () => {
   })
 
   it('Store adapter props', async () => {
-    ;(prepAdapter as any).mockImplementation(() => {
+    ;(buildServer as any).mockImplementation(() => {
       return {
         server_directory: 'mock',
         static_directory: 'mock',
         prerendered_directory: 'mock',
-        routes: ['mock'],
       }
     })
+    ;(buildOptions as any).mockImplementation(() => {
+      return 'mock'
+      })
+    ;(buildRouter as any).mockImplementation(() => {
+      return 'mock'
+      })
 
     const builder = {
       log: {
