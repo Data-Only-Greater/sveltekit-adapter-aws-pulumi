@@ -3,14 +3,14 @@ import * as path from 'path'
 
 import { getTempDir } from './utils'
 
-describe('pulumi/utils.ts', () => {
+describe('stacks/utils.ts', () => {
   let envOrig: string
-  let utils: typeof import('../pulumi/utils')
+  let utils: typeof import('../stacks/utils')
 
   beforeEach(async () => {
     vi.resetModules()
     envOrig = JSON.stringify(process.env)
-    utils = await import('../pulumi/utils')
+    utils = await import('../stacks/utils')
   })
 
   afterEach(() => {
