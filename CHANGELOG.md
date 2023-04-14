@@ -1,3 +1,18 @@
+# [1.2.0](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.1.0...v1.2.0) (2023-04-14)
+
+
+### Bug Fixes
+
+* add defaultRootObject to distribution if index.html is a static route ([c1da38e](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/c1da38e9ca6d22294a083c34a3c6ef1b9f903803))
+* call refresh when destroying stack to adapt to drift ([d3fbb2f](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/d3fbb2f643c64a1cef504646f86de8e292e5087c))
+* don't remove build directory in case of pulumi failure ([6806dda](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/6806dda722d40d2135c7d2b360f72a9671e9f0ea))
+* finish fixing tests ([7031aad](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/7031aadb731e09766c77691ecfe6752866ce76de))
+
+
+### Features
+
+* deploy using lambda@edge ([8573c5f](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/8573c5f8887b00462159cf4ee369a2d077d8b282))
+
 # [1.1.0](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.0.8...v1.1.0) (2023-04-03)
 
 
