@@ -6,15 +6,15 @@ import * as aws from '@pulumi/aws'
 
 import { MyMocks, promiseOf, findResource, getTempDir } from './utils'
 
-describe('pulumi/resources.ts', () => {
-  let infra: typeof import('../pulumi/resources')
+describe('stacks/main/resources.ts', () => {
+  let infra: typeof import('../stacks/main/resources')
   let mocks: MyMocks
 
   beforeEach(async () => {
     vi.resetModules()
     mocks = new MyMocks()
     pulumi.runtime.setMocks(mocks)
-    infra = await import('../pulumi/resources')
+    infra = await import('../stacks/main/resources')
   })
 
   it('getLambdaRole', async () => {
@@ -26,91 +26,6 @@ describe('pulumi/resources.ts', () => {
     expect(statement.Action).toMatch('sts:AssumeRole')
     expect(statement.Effect).toMatch('Allow')
     expect(statement.Principal.Service).toMatch('lambda.amazonaws.com')
-  })
-
-  it('buildServer', async () => {
-    const memorySize = 128
-    const serverPath = 'mock'
-
-    const iamForLambda = infra.getLambdaRole()
-    const { httpApi, defaultRoute } = infra.buildServer(
-      iamForLambda,
-      serverPath,
-      memorySize,
-      {}
-    )
-
-    const protocolType = await promiseOf(httpApi.protocolType)
-    const expectedApiId = await promiseOf(httpApi.id)
-    const executionArn = await promiseOf(httpApi.executionArn)
-
-    expectTypeOf(httpApi).toEqualTypeOf<aws.apigatewayv2.Api>()
-    expect(protocolType).toMatch('HTTP')
-
-    const routeKey = await promiseOf(defaultRoute.routeKey)
-    const routeApiId = await promiseOf(defaultRoute.apiId)
-
-    await new Promise((r) => setTimeout(r, 1000))
-
-    expectTypeOf(defaultRoute).toEqualTypeOf<aws.apigatewayv2.Route>()
-    expect(routeKey).toMatch('$default')
-    expect(routeApiId).toMatch(expectedApiId)
-
-    const target = await promiseOf(defaultRoute.target)
-    const integrationMatch = target!.match('integrations/(.*?)-id')
-    const serverIntegrationName = integrationMatch![1]
-
-    expect(mocks.resources).toHaveProperty(serverIntegrationName)
-    const serverIntegration = mocks.resources[serverIntegrationName]
-
-    expect(serverIntegration.type).toMatch(
-      'aws:apigatewayv2/integration:Integration'
-    )
-    expect(serverIntegration.apiId).toMatch(expectedApiId)
-    expect(serverIntegration.integrationMethod).toMatch('POST')
-    expect(serverIntegration.integrationType).toMatch('AWS_PROXY')
-    expect(serverIntegration.payloadFormatVersion).toMatch('1.0')
-
-    const lambdaMatch = serverIntegration.integrationUri.match('(.*?)-arn')
-    const lambdaIntegrationName = lambdaMatch![1]
-
-    expect(mocks.resources).toHaveProperty(lambdaIntegrationName)
-    const lambda = mocks.resources[lambdaIntegrationName]
-    const iamArn = await promiseOf(iamForLambda.arn)
-    const codePath = await lambda.code.path
-
-    expect(lambda.type).toMatch('aws:lambda/function:Function')
-    expect(lambda.handler).toMatch('index.handler')
-    expect(lambda.memorySize).toEqual(memorySize)
-    expect(lambda.runtime).toMatch('nodejs16.x')
-    expect(lambda.timeout).toEqual(900)
-    expect(lambda.role).toMatch(iamArn)
-    expect(codePath).toMatch(serverPath)
-
-    // Can't access role in mock outputs for RolePolicyAttachment
-    const RPA = findResource(
-      mocks,
-      'aws:iam/rolePolicyAttachment:RolePolicyAttachment'
-    )
-    expect(RPA).toBeDefined()
-    expect(RPA!.policyArn).toMatch(
-      'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
-    )
-
-    const serverPermission = findResource(
-      mocks,
-      'aws:lambda/permission:Permission'
-    )
-    expect(serverPermission).toBeDefined()
-    expect(serverPermission!.action).toMatch('lambda:InvokeFunction')
-    expect(serverPermission!.principal).toMatch('apigateway.amazonaws.com')
-
-    const sourceArnMatch = serverPermission!.sourceArn.match('(.*?)/\\*/\\*')
-    const sourceArn = sourceArnMatch![1]
-    expect(sourceArn).toMatch(executionArn)
-
-    const functionId = await promiseOf(serverPermission!.function.id)
-    expect(functionId).toMatch(lambda.id)
   })
 
   it('validateCertificate-Wrong-Domain', async () => {
@@ -202,8 +117,9 @@ describe('pulumi/resources.ts', () => {
 
     // Need to wait for the mocks to update
     await new Promise((r) => setTimeout(r, 100))
-
-    expect(Object.keys(mocks.resources)).toHaveLength(1)
+    
+    console.log(Object.keys(mocks.resources))
+    expect(Object.keys(mocks.resources)).toHaveLength(2)
     const resource = Object.values(mocks.resources)[0]
 
     expect(resource.type).toMatch('aws:s3/bucket:Bucket')
@@ -212,8 +128,8 @@ describe('pulumi/resources.ts', () => {
   })
 
   it('buildCDN', async () => {
-    const httpApi = new aws.apigatewayv2.Api('MockAPI', {
-      protocolType: 'HTTP',
+    const router = new aws.lambda.Function('MockAPI', {
+      role: 'mock'
     })
     const bucket = new aws.s3.Bucket('MockBucket')
     const routes = ['mock/*', 'another/*']
@@ -225,42 +141,15 @@ describe('pulumi/resources.ts', () => {
     const bucketArn = await promiseOf(bucket.arn)
 
     const distribution = infra.buildCDN(
-      httpApi,
+      router,
       bucket,
-      routes,
       serverHeaders,
-      staticHeaders,
       FQDN,
       certificateArn
     )
 
     const distOrigins = await promiseOf(distribution.origins)
-    expect(distOrigins).toHaveLength(2)
-
-    let customOriginIndex: number | undefined
-
-    for (const [i, value] of distOrigins.entries()) {
-      if (value.hasOwnProperty('customOriginConfig')) {
-        customOriginIndex = i
-        break
-      }
-    }
-
-    expect(customOriginIndex).toBeDefined()
-    const customOrigin = distOrigins[customOriginIndex!]
-
-    expect(customOrigin.domainName).toMatch('example.com')
-    expect(customOrigin.customOriginConfig!.httpPort).toBe(80)
-    expect(customOrigin.customOriginConfig!.httpsPort).toBe(443)
-    expect(customOrigin.customOriginConfig!.originProtocolPolicy).toMatch(
-      'https-only'
-    )
-    expect(customOrigin.customOriginConfig!.originSslProtocols).toEqual([
-      'SSLv3',
-      'TLSv1',
-      'TLSv1.1',
-      'TLSv1.2',
-    ])
+    expect(distOrigins).toHaveLength(1)
 
     let s3OriginIndex: number | undefined
 
@@ -313,13 +202,10 @@ describe('pulumi/resources.ts', () => {
       'POST',
       'PUT',
     ])
-    expect(distDefaultCacheBehavior.cachedMethods).toEqual(['GET', 'HEAD'])
+    expect(distDefaultCacheBehavior.cachedMethods).toEqual(['GET', 'HEAD', 'OPTIONS'])
     expect(distDefaultCacheBehavior.compress).toBe(true)
     expect(distDefaultCacheBehavior.viewerProtocolPolicy).toMatch(
       'redirect-to-https'
-    )
-    expect(distDefaultCacheBehavior.targetOriginId).toMatch(
-      customOrigin.originId
     )
     expect(distDefaultCacheBehavior.cachePolicyId).toMatch(
       'aws:cloudfront/getCachePolicy:getCachePolicy-id'
@@ -329,7 +215,7 @@ describe('pulumi/resources.ts', () => {
       distDefaultCacheBehavior.originRequestPolicyId!.match('(.*?)-id')
     const originRequestPolicyName = originRequestPolicyMatch![1]
     const originRequestPolicy = mocks.resources[originRequestPolicyName]
-
+    
     expect(originRequestPolicy.type).toMatch(
       'aws:cloudfront/originRequestPolicy:OriginRequestPolicy'
     )
@@ -342,39 +228,6 @@ describe('pulumi/resources.ts', () => {
     )
     expect(originRequestPolicy.queryStringsConfig.queryStringBehavior).toMatch(
       'all'
-    )
-
-    expect(distOrderedCacheBehaviors).toHaveLength(2)
-
-    let pathPatterns: string[] = []
-    distOrderedCacheBehaviors!.forEach(function (item, index) {
-      pathPatterns.push(item.pathPattern)
-      expect(item.allowedMethods).toEqual(['GET', 'HEAD', 'OPTIONS'])
-      expect(item.cachePolicyId).toMatch(
-        'aws:cloudfront/getCachePolicy:getCachePolicy-id'
-      )
-      expect(item.cachedMethods).toEqual(['GET', 'HEAD', 'OPTIONS'])
-      expect(item.targetOriginId).toMatch('s3Origin')
-      expect(item.viewerProtocolPolicy).toMatch('redirect-to-https')
-    })
-
-    expect(pathPatterns).toEqual(routes)
-
-    const routeRequestPolicyMatch =
-      distOrderedCacheBehaviors![0].originRequestPolicyId!.match('(.*?)-id')
-    const routeRequestPolicyName = routeRequestPolicyMatch![1]
-    const routeRequestPolicy = mocks.resources[routeRequestPolicyName]
-
-    expect(routeRequestPolicy.type).toMatch(
-      'aws:cloudfront/originRequestPolicy:OriginRequestPolicy'
-    )
-    expect(routeRequestPolicy.cookiesConfig.cookieBehavior).toMatch('none')
-    expect(routeRequestPolicy.headersConfig.headerBehavior).toMatch('whitelist')
-    expect(routeRequestPolicy.headersConfig.headers.items).toEqual(
-      staticHeaders
-    )
-    expect(routeRequestPolicy.queryStringsConfig.queryStringBehavior).toMatch(
-      'none'
     )
 
     // Need to wait for the mocks to update
@@ -414,22 +267,16 @@ describe('pulumi/resources.ts', () => {
   })
 
   it('buildCDN (No FQDN)', async () => {
-    const httpApi = new aws.apigatewayv2.Api('MockAPI', {
-      protocolType: 'HTTP',
+    const router = new aws.lambda.Function('MockAPI', {
+      role: 'mock'
     })
     const bucket = new aws.s3.Bucket('MockBucket')
-    const routes = ['mock/*', 'another/*']
-    const serverHeaders = ['mock1', 'mock2']
     const staticHeaders = ['mock3']
 
     const distribution = infra.buildCDN(
-      httpApi,
+      router,
       bucket,
-      routes,
-      serverHeaders,
-      staticHeaders,
-      undefined,
-      undefined
+      staticHeaders
     )
 
     const distAliases = await promiseOf(distribution.aliases)
@@ -480,106 +327,4 @@ describe('pulumi/resources.ts', () => {
     expect(parentDomain).toMatch(parent)
   })
 
-  it('buildServerOptionsHandler', async () => {
-    const iamForLambda = infra.getLambdaRole()
-    const httpApi = new aws.apigatewayv2.Api('MockAPI', {
-      protocolType: 'HTTP',
-    })
-    const allowedOrigins = [
-      'https://mock.example.com',
-      'https://mock.another.com',
-    ]
-
-    const optionsRoute = infra.buildServerOptionsHandler(
-      iamForLambda,
-      httpApi,
-      allowedOrigins
-    )
-
-    const routeKey = await promiseOf(optionsRoute.routeKey)
-    const routeApiId = await promiseOf(optionsRoute.apiId)
-    const expectedApiId = await promiseOf(httpApi.id)
-    const executionArn = await promiseOf(httpApi.executionArn)
-
-    expectTypeOf(optionsRoute).toEqualTypeOf<aws.apigatewayv2.Route>()
-    expect(routeKey).toMatch('OPTIONS /{proxy+}')
-    expect(routeApiId).toMatch(expectedApiId)
-
-    const target = await promiseOf(optionsRoute.target)
-    const integrationMatch = target!.match('integrations/(.*?)-id')
-    const serverIntegrationName = integrationMatch![1]
-
-    expect(mocks.resources).toHaveProperty(serverIntegrationName)
-    const serverIntegration = mocks.resources[serverIntegrationName]
-
-    expect(serverIntegration.type).toMatch(
-      'aws:apigatewayv2/integration:Integration'
-    )
-    expect(serverIntegration.apiId).toMatch(expectedApiId)
-    expect(serverIntegration.integrationMethod).toMatch('POST')
-    expect(serverIntegration.integrationType).toMatch('AWS_PROXY')
-    expect(serverIntegration.payloadFormatVersion).toMatch('1.0')
-
-    const lambdaMatch = serverIntegration.integrationUri.match('(.*?)-arn')
-    const lambdaIntegrationName = lambdaMatch![1]
-
-    expect(mocks.resources).toHaveProperty(lambdaIntegrationName)
-    const lambda = mocks.resources[lambdaIntegrationName]
-
-    const iamArn = await promiseOf(iamForLambda.arn)
-    const codeAssets = await lambda.code.assets
-
-    expect(lambda.type).toMatch('aws:lambda/function:Function')
-    expect(lambda.handler).toMatch('index.handler')
-    expect(lambda.runtime).toMatch('nodejs16.x')
-    expect(lambda.role).toMatch(iamArn)
-    expect(codeAssets).toHaveProperty('index.js')
-
-    const codeText = await codeAssets['index.js'].text
-    expect(codeText).toMatch(/exports.handler/)
-
-    // Can't access role in mock outputs for RolePolicyAttachment
-    const RPA = findResource(
-      mocks,
-      'aws:iam/rolePolicyAttachment:RolePolicyAttachment'
-    )
-    expect(RPA).toBeDefined()
-    expect(RPA!.policyArn).toMatch(
-      'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
-    )
-
-    const serverPermission = findResource(
-      mocks,
-      'aws:lambda/permission:Permission'
-    )
-    expect(serverPermission).toBeDefined()
-    expect(serverPermission!.action).toMatch('lambda:InvokeFunction')
-    expect(serverPermission!.principal).toMatch('apigateway.amazonaws.com')
-
-    const sourceArnMatch = serverPermission!.sourceArn.match('(.*?)/\\*/\\*')
-    const sourceArn = sourceArnMatch![1]
-    expect(sourceArn).toMatch(executionArn)
-
-    const functionId = await promiseOf(serverPermission!.function.id)
-    expect(functionId).toMatch(lambda.id)
-  })
-
-  it('deployServer', async () => {
-    const httpApi = new aws.apigatewayv2.Api('MockAPI', {
-      protocolType: 'HTTP',
-    })
-    const expectedApiId = await promiseOf(httpApi.id)
-
-    infra.deployServer(httpApi, [])
-
-    // Need to wait for the mocks to update
-    await new Promise((r) => setTimeout(r, 100))
-
-    const stage = findResource(mocks, 'aws:apigatewayv2/stage:Stage')
-    expect(stage).toBeDefined()
-
-    expect(stage!.name).toMatch('$default')
-    expect(stage!.autoDeploy).toBe(true)
-    expect(stage!.apiId).toMatch(expectedApiId)
-  })
 })

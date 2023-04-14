@@ -33,10 +33,13 @@ describe('bin/destroy.ts', () => {
     const propsPath = path.join(buildDir, '.adapterprops.json')
 
     const expectedStackName = 'mock'
-    const expectedPulumiPath = 'mock/pulumi'
+    const expectedPulumiPaths = [
+      'stacks/one',
+      'stacks/two'
+    ]
     const json = JSON.stringify({
       stackName: expectedStackName,
-      pulumiPath: expectedPulumiPath,
+      pulumiPaths: expectedPulumiPaths,
     })
     fs.writeFileSync(propsPath, json)
 
@@ -51,13 +54,13 @@ describe('bin/destroy.ts', () => {
     let spawnSyncMock = <any>spawnSync
     const args = spawnSyncMock.mock.calls[0]
 
-    expect(spawnSync).toHaveBeenCalledTimes(1)
+    expect(spawnSync).toHaveBeenCalledTimes(2)
     expect(args).toEqual(
       expect.arrayContaining([
         'pulumi',
-        ['destroy', '-f', '-s', expectedStackName, '-y'],
+        ['destroy', '-f', '-s', expectedStackName, '-y', '--refresh'],
         expect.objectContaining({
-          cwd: expectedPulumiPath,
+          cwd: expectedPulumiPaths[0],
         }),
       ])
     )
@@ -68,10 +71,13 @@ describe('bin/destroy.ts', () => {
     const propsPath = path.join(tmpDir, '.adapterprops.json')
 
     const expectedStackName = 'mock'
-    const expectedPulumiPath = 'mock/pulumi'
+    const expectedPulumiPaths = [
+      'stacks/one',
+      'stacks/two'
+    ]
     const json = JSON.stringify({
       stackName: expectedStackName,
-      pulumiPath: expectedPulumiPath,
+      pulumiPaths: expectedPulumiPaths,
     })
     fs.writeFileSync(propsPath, json)
 
@@ -83,13 +89,13 @@ describe('bin/destroy.ts', () => {
     let spawnSyncMock = <any>spawnSync
     const args = spawnSyncMock.mock.calls[0]
 
-    expect(spawnSync).toHaveBeenCalledTimes(1)
+    expect(spawnSync).toHaveBeenCalledTimes(2)
     expect(args).toEqual(
       expect.arrayContaining([
         'pulumi',
-        ['destroy', '-f', '-s', expectedStackName, '-y'],
+        ['destroy', '-f', '-s', expectedStackName, '-y', '--refresh'],
         expect.objectContaining({
-          cwd: expectedPulumiPath,
+          cwd: expectedPulumiPaths[0],
         }),
       ])
     )
