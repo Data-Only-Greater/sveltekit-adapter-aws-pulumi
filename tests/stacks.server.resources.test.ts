@@ -40,39 +40,14 @@ describe('stacks/server/resources.ts', () => {
       {},
       memorySize
     )
+    
+    const functionName = await promiseOf(functionURL.functionName)
+    const authorizationType = await promiseOf(functionURL.authorizationType)
 
-    const protocolType = await promiseOf(httpApi.protocolType)
-    const expectedApiId = await promiseOf(httpApi.id)
-    const executionArn = await promiseOf(httpApi.executionArn)
+    expectTypeOf(functionURL).toEqualTypeOf<aws.lambda.FunctionUrl>()
+    expect(authorizationType).toMatch('NONE')
 
-    expectTypeOf(httpApi).toEqualTypeOf<aws.apigatewayv2.Api>()
-    expect(protocolType).toMatch('HTTP')
-
-    const routeKey = await promiseOf(defaultRoute.routeKey)
-    const routeApiId = await promiseOf(defaultRoute.apiId)
-
-    await new Promise((r) => setTimeout(r, 1000))
-
-    expectTypeOf(defaultRoute).toEqualTypeOf<aws.apigatewayv2.Route>()
-    expect(routeKey).toMatch('$default')
-    expect(routeApiId).toMatch(expectedApiId)
-
-    const target = await promiseOf(defaultRoute.target)
-    const integrationMatch = target!.match('integrations/(.*?)-id')
-    const serverIntegrationName = integrationMatch![1]
-
-    expect(mocks.resources).toHaveProperty(serverIntegrationName)
-    const serverIntegration = mocks.resources[serverIntegrationName]
-
-    expect(serverIntegration.type).toMatch(
-      'aws:apigatewayv2/integration:Integration'
-    )
-    expect(serverIntegration.apiId).toMatch(expectedApiId)
-    expect(serverIntegration.integrationMethod).toMatch('POST')
-    expect(serverIntegration.integrationType).toMatch('AWS_PROXY')
-    expect(serverIntegration.payloadFormatVersion).toMatch('1.0')
-
-    const lambdaMatch = serverIntegration.integrationUri.match('(.*?)-arn')
+    const lambdaMatch = functionName.match('(.*?)-arn')
     const lambdaIntegrationName = lambdaMatch![1]
 
     expect(mocks.resources).toHaveProperty(lambdaIntegrationName)
@@ -83,7 +58,7 @@ describe('stacks/server/resources.ts', () => {
     expect(lambda.type).toMatch('aws:lambda/function:Function')
     expect(lambda.handler).toMatch('index.handler')
     expect(lambda.memorySize).toEqual(memorySize)
-    expect(lambda.runtime).toMatch('nodejs16.x')
+    expect(lambda.runtime).toMatch('nodejs18.x')
     expect(lambda.timeout).toEqual(900)
     expect(lambda.role).toMatch(iamArn)
     expect(codePath).toMatch(serverPath)
@@ -98,20 +73,6 @@ describe('stacks/server/resources.ts', () => {
       'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
     )
 
-    const serverPermission = findResource(
-      mocks,
-      'aws:lambda/permission:Permission'
-    )
-    expect(serverPermission).toBeDefined()
-    expect(serverPermission!.action).toMatch('lambda:InvokeFunction')
-    expect(serverPermission!.principal).toMatch('apigateway.amazonaws.com')
-
-    const sourceArnMatch = serverPermission!.sourceArn.match('(.*?)/\\*/\\*')
-    const sourceArn = sourceArnMatch![1]
-    expect(sourceArn).toMatch(executionArn)
-
-    const functionId = await promiseOf(serverPermission!.function.id)
-    expect(functionId).toMatch(lambda.id)
   })
 
 })
