@@ -17,28 +17,48 @@ const eastRegion = new aws.Provider(registerName('ProviderEast'), {
   region: 'us-east-1',
 })
 
-export function getLambdaRole(): aws.iam.Role {
+export function getLambdaRole(functionArns?: string[]): aws.iam.Role {
+  
+  interface IAMPolicy {
+    statements: [
+      {
+        principals?: [
+          {
+            type: string,
+            identifiers: string[]
+          }
+        ],
+        actions: string[],
+        effect: string,
+        resources?: string[]
+      }
+    ]
+  }
+  
+  let lambdaPolicyStub: IAMPolicy = {
+    statements: [
+      {
+        principals: [
+          {
+            type: 'Service',
+            identifiers: [
+              'lambda.amazonaws.com',
+              'edgelambda.amazonaws.com'
+            ],
+          },
+        ],
+        actions: ['sts:AssumeRole'],
+        effect: 'Allow',
+      },
+    ]
+  }
+  
+  let lambdaPolicyDocument = aws.iam.getPolicyDocumentOutput(lambdaPolicyStub)
   const iamForLambda = new aws.iam.Role(registerName('IamForLambda'), {
-    assumeRolePolicy: `{
-          "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Principal": {
-                "Service": [
-                  "lambda.amazonaws.com",
-                  "edgelambda.amazonaws.com"
-                ]
-              },
-              "Effect": "Allow",
-              "Sid": ""
-            }
-          ]
-        }
-        `,
+    assumeRolePolicy: lambdaPolicyDocument.json
   })
 
-  const RPA = new aws.iam.RolePolicyAttachment(
+  new aws.iam.RolePolicyAttachment(
     registerName('ServerRPABasicExecutionRole'),
     {
       role: iamForLambda.name,
@@ -46,6 +66,34 @@ export function getLambdaRole(): aws.iam.Role {
     }
   )
 
+  if (functionArns) {
+    
+    lambdaPolicyStub = {
+      statements: [
+        {
+          actions: ['lambda:InvokeFunctionUrl'],
+          effect: 'Allow',
+          resources: functionArns
+        }
+      ]
+    }
+    
+    lambdaPolicyDocument = aws.iam.getPolicyDocumentOutput(lambdaPolicyStub)
+    
+    const policy = new aws.iam.Policy(registerName("invokePolicy"), {
+      policy: lambdaPolicyDocument.json
+    })
+    
+    new aws.iam.RolePolicyAttachment(
+      registerName('ServerRPAInvokePolicy'),
+      {
+        role: iamForLambda.name,
+        policyArn: policy.arn
+      }
+    )
+    
+  }
+  
   return iamForLambda
 }
 

@@ -53,14 +53,15 @@
     "vitest": "^0.29.7"
   },
   "dependencies": {
+    "@aws-crypto/sha256-js": "^4.0.0",
     "@pulumi/aws": "^5.0.0",
     "@pulumi/command": "^0.7.1",
     "@pulumi/pulumi": "^3.0.0",
     "dotenv": "^16.0.3",
-    "minimist": "^1.2.8",
-    "sveltekit-adapter-aws-base": "~1.4.8",
     "folder-hash": "^4.0.4",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "minimist": "^1.2.8",
+    "sveltekit-adapter-aws-base": "^1.5.2"
   },
   "release": {
     "branches": [

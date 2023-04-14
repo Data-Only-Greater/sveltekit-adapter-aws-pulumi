@@ -118,6 +118,8 @@ export function adapter({
           edgePath: { value: edge_directory },
           staticPath: { value: static_directory },
           prerenderedPath: { value: prerendered_directory },
+          serverArn: { value: serverStackUpResult.outputs.serverArn.value },
+          optionsArn: { value: serverStackUpResult.outputs.optionsArn.value },
         })
 
         if (FQDN) {

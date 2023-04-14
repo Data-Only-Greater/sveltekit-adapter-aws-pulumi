@@ -40,10 +40,12 @@ const optionsURL = buildLambda(
   optionsEnv
 )
 
+export const serverArn = serverURL.functionArn
 export const serverDomain = serverURL.functionUrl.apply((endpoint) =>
   endpoint.split('://')[1].slice(0, -1)
 )
 
+export const optionsArn = optionsURL.functionArn
 export const optionsDomain = optionsURL.functionUrl.apply((endpoint) =>
   endpoint.split('://')[1].slice(0, -1)
 )
