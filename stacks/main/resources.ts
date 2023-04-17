@@ -245,7 +245,7 @@ export function buildCDN(
       description: 'Default Origin Access Control',
       name: 'CloudFrontOriginAccessControl',
       originAccessControlOriginType: 's3',
-      signingBehavior: 'always',
+      signingBehavior: 'no-override',
       signingProtocol: 'sigv4',
     }
   )
@@ -253,9 +253,6 @@ export function buildCDN(
   const optimizedCachePolicy = aws.cloudfront.getCachePolicyOutput({
     name: 'Managed-CachingOptimized',
   })
-
-  // serverFunctionURL.functionUrl.apply(
-  //   (endpoint) => endpoint.split('://')[1].slice(0, -1)
 
   const distribution = new aws.cloudfront.Distribution(
     registerName('CloudFrontDistribution'),

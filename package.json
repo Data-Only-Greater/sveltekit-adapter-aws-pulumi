@@ -60,7 +60,7 @@
     "folder-hash": "^4.0.4",
     "lodash": "^4.17.21",
     "minimist": "^1.2.8",
-    "sveltekit-adapter-aws-base": "^1.5.3"
+    "sveltekit-adapter-aws-base": "^1.5.5"
   },
   "release": {
     "branches": [
