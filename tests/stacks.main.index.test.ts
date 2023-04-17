@@ -38,9 +38,9 @@ describe('stacks/main/index.ts', () => {
             return '{"mock": "mock"}'
           }
           return ''
-        })
+        }),
       }
-    });
+    })
 
     infra = await import('../stacks/main')
 
@@ -50,8 +50,10 @@ describe('stacks/main/index.ts', () => {
     expect(resources.buildCDN).toHaveBeenCalledTimes(1)
     expect(resources.createAliasRecord).toHaveBeenCalledTimes(0)
     expect(resources.buildInvalidator).toHaveBeenCalledTimes(1)
-    
-    const allowedOrigin = await promiseOf(infra.allowedOrigins[0] as pulumi.Output<string>)
+
+    const allowedOrigin = await promiseOf(
+      infra.allowedOrigins[0] as pulumi.Output<string>
+    )
     const appUrl = await promiseOf(infra.appUrl as pulumi.Output<string>)
     expect(allowedOrigin).toMatch('https://example.com')
     expect(appUrl).toMatch('https://example.com')
@@ -77,16 +79,18 @@ describe('stacks/main/index.ts', () => {
             return fqdn
           }
           return ''
-        })
+        }),
       }
-    });
+    })
 
     infra = await import('../stacks/main')
 
     expect(resources.validateCertificate).toHaveBeenCalledTimes(1)
     expect(resources.createAliasRecord).toHaveBeenCalledTimes(1)
-    
-    const distOrigin = await promiseOf(infra.allowedOrigins[0] as pulumi.Output<string>)
+
+    const distOrigin = await promiseOf(
+      infra.allowedOrigins[0] as pulumi.Output<string>
+    )
     const fqdnOrigin = infra.allowedOrigins[1]
 
     expect(distOrigin).toMatch('https://example.com')

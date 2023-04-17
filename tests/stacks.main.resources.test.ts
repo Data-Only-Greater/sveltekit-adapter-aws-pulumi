@@ -117,7 +117,7 @@ describe('stacks/main/resources.ts', () => {
 
     // Need to wait for the mocks to update
     await new Promise((r) => setTimeout(r, 100))
-    
+
     console.log(Object.keys(mocks.resources))
     expect(Object.keys(mocks.resources)).toHaveLength(2)
     const resource = Object.values(mocks.resources)[0]
@@ -129,7 +129,7 @@ describe('stacks/main/resources.ts', () => {
 
   it('buildCDN', async () => {
     const router = new aws.lambda.Function('MockAPI', {
-      role: 'mock'
+      role: 'mock',
     })
     const bucket = new aws.s3.Bucket('MockBucket')
     const routes = ['mock/*', 'another/*']
@@ -202,7 +202,11 @@ describe('stacks/main/resources.ts', () => {
       'POST',
       'PUT',
     ])
-    expect(distDefaultCacheBehavior.cachedMethods).toEqual(['GET', 'HEAD', 'OPTIONS'])
+    expect(distDefaultCacheBehavior.cachedMethods).toEqual([
+      'GET',
+      'HEAD',
+      'OPTIONS',
+    ])
     expect(distDefaultCacheBehavior.compress).toBe(true)
     expect(distDefaultCacheBehavior.viewerProtocolPolicy).toMatch(
       'redirect-to-https'
@@ -215,7 +219,7 @@ describe('stacks/main/resources.ts', () => {
       distDefaultCacheBehavior.originRequestPolicyId!.match('(.*?)-id')
     const originRequestPolicyName = originRequestPolicyMatch![1]
     const originRequestPolicy = mocks.resources[originRequestPolicyName]
-    
+
     expect(originRequestPolicy.type).toMatch(
       'aws:cloudfront/originRequestPolicy:OriginRequestPolicy'
     )
@@ -268,16 +272,12 @@ describe('stacks/main/resources.ts', () => {
 
   it('buildCDN (No FQDN)', async () => {
     const router = new aws.lambda.Function('MockAPI', {
-      role: 'mock'
+      role: 'mock',
     })
     const bucket = new aws.s3.Bucket('MockBucket')
     const staticHeaders = ['mock3']
 
-    const distribution = infra.buildCDN(
-      router,
-      bucket,
-      staticHeaders
-    )
+    const distribution = infra.buildCDN(router, bucket, staticHeaders)
 
     const distAliases = await promiseOf(distribution.aliases)
     const distViewerCertificate = await promiseOf(
@@ -326,5 +326,4 @@ describe('stacks/main/resources.ts', () => {
     expect(subdomain).toMatch(sub)
     expect(parentDomain).toMatch(parent)
   })
-
 })

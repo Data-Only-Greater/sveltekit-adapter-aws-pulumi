@@ -33,7 +33,6 @@ const routerHandler = buildRouter(iamForLambda, edgePath!)
 
 let certificateArn: pulumi.Input<string> | undefined
 
-
 if (FQDN) {
   certificateArn = validateCertificate(FQDN!, domainName)
 }

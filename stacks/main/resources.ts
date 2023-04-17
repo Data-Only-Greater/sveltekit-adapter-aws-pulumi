@@ -18,44 +18,40 @@ const eastRegion = new aws.Provider(registerName('ProviderEast'), {
 })
 
 export function getLambdaRole(functionArns?: string[]): aws.iam.Role {
-  
   interface IAMPolicy {
     statements: [
       {
         principals?: [
           {
-            type: string,
+            type: string
             identifiers: string[]
           }
-        ],
-        actions: string[],
-        effect: string,
+        ]
+        actions: string[]
+        effect: string
         resources?: string[]
       }
     ]
   }
-  
+
   let lambdaPolicyStub: IAMPolicy = {
     statements: [
       {
         principals: [
           {
             type: 'Service',
-            identifiers: [
-              'lambda.amazonaws.com',
-              'edgelambda.amazonaws.com'
-            ],
+            identifiers: ['lambda.amazonaws.com', 'edgelambda.amazonaws.com'],
           },
         ],
         actions: ['sts:AssumeRole'],
         effect: 'Allow',
       },
-    ]
+    ],
   }
-  
+
   let lambdaPolicyDocument = aws.iam.getPolicyDocumentOutput(lambdaPolicyStub)
   const iamForLambda = new aws.iam.Role(registerName('IamForLambda'), {
-    assumeRolePolicy: lambdaPolicyDocument.json
+    assumeRolePolicy: lambdaPolicyDocument.json,
   })
 
   new aws.iam.RolePolicyAttachment(
@@ -67,33 +63,28 @@ export function getLambdaRole(functionArns?: string[]): aws.iam.Role {
   )
 
   if (functionArns) {
-    
     lambdaPolicyStub = {
       statements: [
         {
           actions: ['lambda:InvokeFunctionUrl'],
           effect: 'Allow',
-          resources: functionArns
-        }
-      ]
+          resources: functionArns,
+        },
+      ],
     }
-    
+
     lambdaPolicyDocument = aws.iam.getPolicyDocumentOutput(lambdaPolicyStub)
-    
-    const policy = new aws.iam.Policy(registerName("invokePolicy"), {
-      policy: lambdaPolicyDocument.json
+
+    const policy = new aws.iam.Policy(registerName('invokePolicy'), {
+      policy: lambdaPolicyDocument.json,
     })
-    
-    new aws.iam.RolePolicyAttachment(
-      registerName('ServerRPAInvokePolicy'),
-      {
-        role: iamForLambda.name,
-        policyArn: policy.arn
-      }
-    )
-    
+
+    new aws.iam.RolePolicyAttachment(registerName('ServerRPAInvokePolicy'), {
+      role: iamForLambda.name,
+      policyArn: policy.arn,
+    })
   }
-  
+
   return iamForLambda
 }
 
@@ -297,7 +288,7 @@ export function buildCDN(
               .apply(([arn, version]) => {
                 return `${arn}:${version}`
               }),
-              includeBody: true
+            includeBody: true,
           },
         ],
         originRequestPolicyId: defaultRequestPolicy.id,

@@ -14,28 +14,31 @@ vi.mock('@pulumi/pulumi/automation/index.js', () => {
   const Stack = {
     setConfig: vi.fn(),
     setAllConfig: vi.fn(),
-    getAllConfig: vi.fn(() => {return {}}),
-    up: vi.fn(() => {return {
-      outputs: {
-        serverDomain: {
-          value: 'mock'
+    getAllConfig: vi.fn(() => {
+      return {}
+    }),
+    up: vi.fn(() => {
+      return {
+        outputs: {
+          serverDomain: {
+            value: 'mock',
+          },
+          optionsDomain: {
+            value: 'mock',
+          },
+          allowedOrigins: {
+            value: ['mock'],
+          },
         },
-        optionsDomain: {
-          value: 'mock'
-        },
-        allowedOrigins: {
-          value: ['mock']
-        }
       }
-    }
-  }),
+    }),
   }
   const LocalWorkspace = {
-    createOrSelectStack: vi.fn(() => Stack)
+    createOrSelectStack: vi.fn(() => Stack),
   }
-  
+
   return {
-    LocalWorkspace
+    LocalWorkspace,
   }
 })
 
@@ -57,10 +60,10 @@ describe('adapter.ts', () => {
     })
     ;(buildOptions as any).mockImplementation(() => {
       return 'mock'
-      })
+    })
     ;(buildRouter as any).mockImplementation(() => {
       return 'mock'
-      })
+    })
 
     const builder = {
       log: {

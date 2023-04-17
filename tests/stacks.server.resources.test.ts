@@ -40,7 +40,7 @@ describe('stacks/server/resources.ts', () => {
       {},
       memorySize
     )
-    
+
     const functionName = await promiseOf(functionURL.functionName)
     const authorizationType = await promiseOf(functionURL.authorizationType)
 
@@ -72,7 +72,5 @@ describe('stacks/server/resources.ts', () => {
     expect(RPA!.policyArn).toMatch(
       'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
     )
-
   })
-
 })
