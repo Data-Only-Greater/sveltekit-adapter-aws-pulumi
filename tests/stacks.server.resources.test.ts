@@ -45,7 +45,7 @@ describe('stacks/server/resources.ts', () => {
     const authorizationType = await promiseOf(functionURL.authorizationType)
 
     expectTypeOf(functionURL).toEqualTypeOf<aws.lambda.FunctionUrl>()
-    expect(authorizationType).toMatch('NONE')
+    expect(authorizationType).toMatch('AWS_IAM')
 
     const lambdaMatch = functionName.match('(.*?)-arn')
     const lambdaIntegrationName = lambdaMatch![1]

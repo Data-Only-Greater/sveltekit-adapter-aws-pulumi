@@ -20,6 +20,12 @@ vi.mock('@pulumi/pulumi/automation/index.js', () => {
     up: vi.fn(() => {
       return {
         outputs: {
+          serverArn: {
+            value: 'mock',
+          },
+          optionsArn: {
+            value: 'mock',
+          },
           serverDomain: {
             value: 'mock',
           },
