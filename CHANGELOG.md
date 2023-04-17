@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.3.0...v1.3.1) (2023-04-17)
+
+
+### Bug Fixes
+
+* try to see why semantic release is skipping files ([6e44432](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/6e44432f4a3f79915eabb5ea58308566147bb417))
+
 # [1.3.0](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.2.0...v1.3.0) (2023-04-17)
 
 
