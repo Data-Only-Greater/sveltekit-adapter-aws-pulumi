@@ -300,6 +300,7 @@ export function buildCDN(
               .apply(([arn, version]) => {
                 return `${arn}:${version}`
               }),
+              includeBody: true
           },
         ],
         originRequestPolicyId: defaultRequestPolicy.id,
