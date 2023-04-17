@@ -63,7 +63,7 @@ export function buildLambda(
 
   const lambdaURL = new aws.lambda.FunctionUrl(`${name}URL`, {
     functionName: lambdaHandler.arn,
-    authorizationType: 'NONE',
+    authorizationType: 'AWS_IAM',
   })
 
   return lambdaURL

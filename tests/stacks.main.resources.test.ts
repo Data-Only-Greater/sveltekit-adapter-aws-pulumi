@@ -20,12 +20,15 @@ describe('stacks/main/resources.ts', () => {
   it('getLambdaRole', async () => {
     const test = infra.getLambdaRole()
     const assumeRolePolicy = await promiseOf(test.assumeRolePolicy)
-    const statement = JSON.parse(assumeRolePolicy).Statement[0]
+    const statement = JSON.parse(assumeRolePolicy).statements[0]
 
     expectTypeOf(test).toEqualTypeOf<aws.iam.Role>()
-    expect(statement.Action).toMatch('sts:AssumeRole')
-    expect(statement.Effect).toMatch('Allow')
-    expect(statement.Principal.Service).toMatch('lambda.amazonaws.com')
+    expect(statement.actions[0]).toMatch('sts:AssumeRole')
+    expect(statement.effect).toMatch('Allow')
+    expect(statement.principals[0].identifiers).toEqual([
+      'lambda.amazonaws.com',
+      'edgelambda.amazonaws.com',
+    ])
   })
 
   it('validateCertificate-Wrong-Domain', async () => {
@@ -117,8 +120,7 @@ describe('stacks/main/resources.ts', () => {
 
     // Need to wait for the mocks to update
     await new Promise((r) => setTimeout(r, 100))
-    
-    console.log(Object.keys(mocks.resources))
+
     expect(Object.keys(mocks.resources)).toHaveLength(2)
     const resource = Object.values(mocks.resources)[0]
 
@@ -129,7 +131,7 @@ describe('stacks/main/resources.ts', () => {
 
   it('buildCDN', async () => {
     const router = new aws.lambda.Function('MockAPI', {
-      role: 'mock'
+      role: 'mock',
     })
     const bucket = new aws.s3.Bucket('MockBucket')
     const routes = ['mock/*', 'another/*']
@@ -173,7 +175,7 @@ describe('stacks/main/resources.ts', () => {
       'aws:cloudfront/originAccessControl:OriginAccessControl'
     )
     expect(oac.originAccessControlOriginType).toMatch('s3')
-    expect(oac.signingBehavior).toMatch('always')
+    expect(oac.signingBehavior).toMatch('no-override')
     expect(oac.signingProtocol).toMatch('sigv4')
 
     const distAliases = await promiseOf(distribution.aliases)
@@ -202,7 +204,11 @@ describe('stacks/main/resources.ts', () => {
       'POST',
       'PUT',
     ])
-    expect(distDefaultCacheBehavior.cachedMethods).toEqual(['GET', 'HEAD', 'OPTIONS'])
+    expect(distDefaultCacheBehavior.cachedMethods).toEqual([
+      'GET',
+      'HEAD',
+      'OPTIONS',
+    ])
     expect(distDefaultCacheBehavior.compress).toBe(true)
     expect(distDefaultCacheBehavior.viewerProtocolPolicy).toMatch(
       'redirect-to-https'
@@ -215,7 +221,7 @@ describe('stacks/main/resources.ts', () => {
       distDefaultCacheBehavior.originRequestPolicyId!.match('(.*?)-id')
     const originRequestPolicyName = originRequestPolicyMatch![1]
     const originRequestPolicy = mocks.resources[originRequestPolicyName]
-    
+
     expect(originRequestPolicy.type).toMatch(
       'aws:cloudfront/originRequestPolicy:OriginRequestPolicy'
     )
@@ -268,16 +274,12 @@ describe('stacks/main/resources.ts', () => {
 
   it('buildCDN (No FQDN)', async () => {
     const router = new aws.lambda.Function('MockAPI', {
-      role: 'mock'
+      role: 'mock',
     })
     const bucket = new aws.s3.Bucket('MockBucket')
     const staticHeaders = ['mock3']
 
-    const distribution = infra.buildCDN(
-      router,
-      bucket,
-      staticHeaders
-    )
+    const distribution = infra.buildCDN(router, bucket, staticHeaders)
 
     const distAliases = await promiseOf(distribution.aliases)
     const distViewerCertificate = await promiseOf(
@@ -326,5 +328,4 @@ describe('stacks/main/resources.ts', () => {
     expect(subdomain).toMatch(sub)
     expect(parentDomain).toMatch(parent)
   })
-
 })

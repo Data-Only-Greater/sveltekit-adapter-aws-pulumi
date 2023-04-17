@@ -2,7 +2,10 @@ import { writeFileSync } from 'fs'
 import { join } from 'path'
 import * as url from 'url'
 
-import { LocalProgramArgs, LocalWorkspace } from '@pulumi/pulumi/automation/index.js'
+import {
+  LocalProgramArgs,
+  LocalWorkspace,
+} from '@pulumi/pulumi/automation/index.js'
 import {
   buildServer,
   buildOptions,
@@ -43,7 +46,7 @@ export function adapter({
   MEMORY_SIZE,
   zoneName = 'us-east-2',
   env = {},
-  pulumiPaths = []
+  pulumiPaths = [],
 }: AWSAdapterProps = {}) {
   /** @type {import('@sveltejs/kit').Adapter} */
   return {
@@ -69,12 +72,13 @@ export function adapter({
           serverArgs,
           {
             envVars: {
-              'TS_NODE_IGNORE': '^(?!.*(sveltekit-adapter-aws-pulumi)).*'
-            }
-          })
+              TS_NODE_IGNORE: '^(?!.*(sveltekit-adapter-aws-pulumi)).*',
+            },
+          }
+        )
 
         // Set the AWS region.
-        await serverStack.setConfig("aws:region", { value: zoneName });
+        await serverStack.setConfig('aws:region', { value: zoneName })
 
         await serverStack.setAllConfig({
           projectPath: { value: '.env' },
@@ -82,7 +86,6 @@ export function adapter({
           optionsPath: { value: options_directory },
           memorySizeStr: { value: String(MEMORY_SIZE) },
         })
-
 
         const serverStackUpResult = await serverStack.up({
           onOutput: console.info,
@@ -103,21 +106,21 @@ export function adapter({
           stackName: stackName,
           workDir: mainPath,
         }
-        const mainStack = await LocalWorkspace.createOrSelectStack(
-          mainArgs,
-          {
-            envVars: {
-              'TS_NODE_IGNORE': '^(?!.*(sveltekit-adapter-aws-pulumi)).*'
-            }
-          })
+        const mainStack = await LocalWorkspace.createOrSelectStack(mainArgs, {
+          envVars: {
+            TS_NODE_IGNORE: '^(?!.*(sveltekit-adapter-aws-pulumi)).*',
+          },
+        })
 
         // Set the AWS region.
-        await mainStack.setConfig("aws:region", { value: zoneName });
+        await mainStack.setConfig('aws:region', { value: zoneName })
 
         await mainStack.setAllConfig({
           edgePath: { value: edge_directory },
           staticPath: { value: static_directory },
           prerenderedPath: { value: prerendered_directory },
+          serverArn: { value: serverStackUpResult.outputs.serverArn.value },
+          optionsArn: { value: serverStackUpResult.outputs.optionsArn.value },
         })
 
         if (FQDN) {
@@ -131,15 +134,17 @@ export function adapter({
         }
 
         const mainStackUpResult = await mainStack.up({ onOutput: console.info })
-        const mainAllowedOrigins = JSON.stringify(mainStackUpResult.outputs.allowedOrigins.value)
-        
+        const mainAllowedOrigins = JSON.stringify(
+          mainStackUpResult.outputs.allowedOrigins.value
+        )
+
         let serverAllowedOrigins: string = ''
         const serverConfig = await serverStack.getAllConfig()
-        
-        if ('allowedOrigins' in serverConfig){
+
+        if ('allowedOrigins' in serverConfig) {
           serverAllowedOrigins = serverConfig['allowedOrigins'].value
         }
-        
+
         if (serverAllowedOrigins !== mainAllowedOrigins) {
           // Call the server stack setting the allowed origins
           await serverStack.setConfig('allowedOrigins', {

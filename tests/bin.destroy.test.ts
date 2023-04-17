@@ -33,10 +33,7 @@ describe('bin/destroy.ts', () => {
     const propsPath = path.join(buildDir, '.adapterprops.json')
 
     const expectedStackName = 'mock'
-    const expectedPulumiPaths = [
-      'stacks/one',
-      'stacks/two'
-    ]
+    const expectedPulumiPaths = ['stacks/one', 'stacks/two']
     const json = JSON.stringify({
       stackName: expectedStackName,
       pulumiPaths: expectedPulumiPaths,
@@ -71,10 +68,7 @@ describe('bin/destroy.ts', () => {
     const propsPath = path.join(tmpDir, '.adapterprops.json')
 
     const expectedStackName = 'mock'
-    const expectedPulumiPaths = [
-      'stacks/one',
-      'stacks/two'
-    ]
+    const expectedPulumiPaths = ['stacks/one', 'stacks/two']
     const json = JSON.stringify({
       stackName: expectedStackName,
       pulumiPaths: expectedPulumiPaths,

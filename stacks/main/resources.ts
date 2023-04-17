@@ -17,34 +17,73 @@ const eastRegion = new aws.Provider(registerName('ProviderEast'), {
   region: 'us-east-1',
 })
 
-export function getLambdaRole(): aws.iam.Role {
+export function getLambdaRole(functionArns?: string[]): aws.iam.Role {
+  interface IAMPolicy {
+    statements: [
+      {
+        principals?: [
+          {
+            type: string
+            identifiers: string[]
+          }
+        ]
+        actions: string[]
+        effect: string
+        resources?: string[]
+      }
+    ]
+  }
+
+  let lambdaPolicyStub: IAMPolicy = {
+    statements: [
+      {
+        principals: [
+          {
+            type: 'Service',
+            identifiers: ['lambda.amazonaws.com', 'edgelambda.amazonaws.com'],
+          },
+        ],
+        actions: ['sts:AssumeRole'],
+        effect: 'Allow',
+      },
+    ],
+  }
+
+  let lambdaPolicyDocument = aws.iam.getPolicyDocumentOutput(lambdaPolicyStub)
   const iamForLambda = new aws.iam.Role(registerName('IamForLambda'), {
-    assumeRolePolicy: `{
-          "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Principal": {
-                "Service": [
-                  "lambda.amazonaws.com",
-                  "edgelambda.amazonaws.com"
-                ]
-              },
-              "Effect": "Allow",
-              "Sid": ""
-            }
-          ]
-        }
-        `,
+    assumeRolePolicy: lambdaPolicyDocument.json,
   })
 
-  const RPA = new aws.iam.RolePolicyAttachment(
+  new aws.iam.RolePolicyAttachment(
     registerName('ServerRPABasicExecutionRole'),
     {
       role: iamForLambda.name,
       policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole,
     }
   )
+
+  if (functionArns) {
+    lambdaPolicyStub = {
+      statements: [
+        {
+          actions: ['lambda:InvokeFunctionUrl'],
+          effect: 'Allow',
+          resources: functionArns,
+        },
+      ],
+    }
+
+    lambdaPolicyDocument = aws.iam.getPolicyDocumentOutput(lambdaPolicyStub)
+
+    const policy = new aws.iam.Policy(registerName('invokePolicy'), {
+      policy: lambdaPolicyDocument.json,
+    })
+
+    new aws.iam.RolePolicyAttachment(registerName('ServerRPAInvokePolicy'), {
+      role: iamForLambda.name,
+      policyArn: policy.arn,
+    })
+  }
 
   return iamForLambda
 }
@@ -197,7 +236,7 @@ export function buildCDN(
       description: 'Default Origin Access Control',
       name: 'CloudFrontOriginAccessControl',
       originAccessControlOriginType: 's3',
-      signingBehavior: 'always',
+      signingBehavior: 'no-override',
       signingProtocol: 'sigv4',
     }
   )
@@ -205,9 +244,6 @@ export function buildCDN(
   const optimizedCachePolicy = aws.cloudfront.getCachePolicyOutput({
     name: 'Managed-CachingOptimized',
   })
-
-  // serverFunctionURL.functionUrl.apply(
-  //   (endpoint) => endpoint.split('://')[1].slice(0, -1)
 
   const distribution = new aws.cloudfront.Distribution(
     registerName('CloudFrontDistribution'),
@@ -252,6 +288,7 @@ export function buildCDN(
               .apply(([arn, version]) => {
                 return `${arn}:${version}`
               }),
+            includeBody: true,
           },
         ],
         originRequestPolicyId: defaultRequestPolicy.id,

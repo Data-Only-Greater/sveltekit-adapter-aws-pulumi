@@ -31,9 +31,8 @@ export async function main(args: string[]): Promise<void> {
       throw error
     }
   }
-  
+
   for (const pulumiPath of adapterProps.pulumiPaths!) {
-  
     spawnSync(
       'pulumi',
       ['destroy', '-f', '-s', adapterProps.stackName!, '-y', '--refresh'],
@@ -43,7 +42,6 @@ export async function main(args: string[]): Promise<void> {
         env: process.env,
       }
     )
-  
   }
 }
 

@@ -40,12 +40,12 @@ describe('stacks/server/resources.ts', () => {
       {},
       memorySize
     )
-    
+
     const functionName = await promiseOf(functionURL.functionName)
     const authorizationType = await promiseOf(functionURL.authorizationType)
 
     expectTypeOf(functionURL).toEqualTypeOf<aws.lambda.FunctionUrl>()
-    expect(authorizationType).toMatch('NONE')
+    expect(authorizationType).toMatch('AWS_IAM')
 
     const lambdaMatch = functionName.match('(.*?)-arn')
     const lambdaIntegrationName = lambdaMatch![1]
@@ -72,7 +72,5 @@ describe('stacks/server/resources.ts', () => {
     expect(RPA!.policyArn).toMatch(
       'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
     )
-
   })
-
 })

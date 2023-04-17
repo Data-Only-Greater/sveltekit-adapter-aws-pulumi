@@ -16,6 +16,8 @@ const staticPath = pulumiConfig.get('staticPath')
 const prerenderedPath = pulumiConfig.get('prerenderedPath')
 const FQDN = pulumiConfig.get('FQDN')
 const serverHeadersStr = pulumiConfig.get('serverHeaders')
+const serverArn = pulumiConfig.get('serverArn')
+const optionsArn = pulumiConfig.get('optionsArn')
 
 const [_, zoneName, ...MLDs] = FQDN!.split('.') || []
 const domainName = [zoneName, ...MLDs].join('.')
@@ -26,11 +28,10 @@ if (serverHeadersStr) {
   serverHeaders = JSON.parse(serverHeadersStr)
 }
 
-const iamForLambda = getLambdaRole()
+const iamForLambda = getLambdaRole([serverArn!, optionsArn!])
 const routerHandler = buildRouter(iamForLambda, edgePath!)
 
 let certificateArn: pulumi.Input<string> | undefined
-
 
 if (FQDN) {
   certificateArn = validateCertificate(FQDN!, domainName)
