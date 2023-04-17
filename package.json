@@ -36,7 +36,7 @@
     "format": "prettier --write .",
     "test": "vitest",
     "clean": "rimraf dist",
-    "copy-files": "copyfiles stacks/** package.json README.md LICENSE dist",
+    "copy-files": "copyfiles stacks/**/* package.json README.md LICENSE dist",
     "coverage": "vitest run --coverage"
   },
   "devDependencies": {
