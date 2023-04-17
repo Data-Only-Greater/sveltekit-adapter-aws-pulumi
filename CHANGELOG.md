@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.2.0...v1.3.0) (2023-04-17)
+
+
+### Features
+
+* secure access to lambda functions ([#2](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/issues/2)) ([e42de43](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/e42de434d849580f4ecd69a2a4c1574ccfa7f235))
+
 # [1.2.0](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.1.0...v1.2.0) (2023-04-14)
 
 
