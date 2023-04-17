@@ -1,3 +1,10 @@
+## [1.3.2](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.3.1...v1.3.2) (2023-04-17)
+
+
+### Bug Fixes
+
+* update copyfiles search path ([6361661](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/6361661f854e0d285dededc98addf771d8faad19))
+
 ## [1.3.1](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.3.0...v1.3.1) (2023-04-17)
 
 
