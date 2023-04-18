@@ -144,8 +144,9 @@ export function adapter({
         let serverAllowedOrigins: string = ''
         const serverConfig = await serverStack.getAllConfig()
 
-        if ('allowedOrigins' in serverConfig) {
-          serverAllowedOrigins = serverConfig['allowedOrigins'].value
+        if ('sveltekit-aws-adapter-server:allowedOrigins' in serverConfig) {
+          serverAllowedOrigins =
+            serverConfig['sveltekit-aws-adapter-server:allowedOrigins'].value
         }
 
         if (serverAllowedOrigins !== mainAllowedOrigins) {
