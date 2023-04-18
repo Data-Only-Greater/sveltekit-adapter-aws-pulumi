@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.3.3...v1.4.0) (2023-04-18)
+
+
+### Features
+
+* update header config definitions ([2481067](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/2481067daabf1b46571a83aa2ef7b1b1bad56890))
+
 ## [1.3.3](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.3.2...v1.3.3) (2023-04-17)
 
 
