@@ -18,12 +18,12 @@ export interface AWSAdapterProps {
   artifactPath?: string
   autoDeploy?: boolean
   stackName?: string
-  serverHeaders?: string[]
+  defaultHeaders?: string[]
+  extraHeaders?: string[]
   esbuildOptions?: any
   FQDN?: string
   MEMORY_SIZE?: number
   zoneName?: string
-  env?: { [key: string]: string }
   pulumiPaths?: string[]
 }
 
@@ -31,21 +31,20 @@ export function adapter({
   artifactPath = 'build',
   autoDeploy = false,
   stackName = 'dev',
-  serverHeaders = [
+  defaultHeaders = [
     'Accept',
-    'Accept-Charset',
-    'Access-Control-Request-Method',
-    'Access-Control-Request-Headers',
-    'Accept-Datetime',
     'Accept-Language',
+    'If-None-Match',
+    'Sec-Fetch-Dest',
+    'Sec-Fetch-Mode',
     'Origin',
     'Referer',
   ],
+  extraHeaders = [],
   esbuildOptions = {},
   FQDN,
   MEMORY_SIZE,
   zoneName = 'us-east-2',
-  env = {},
   pulumiPaths = [],
 }: AWSAdapterProps = {}) {
   /** @type {import('@sveltejs/kit').Adapter} */
@@ -127,7 +126,13 @@ export function adapter({
           await mainStack.setConfig('FQDN', { value: FQDN })
         }
 
-        if (serverHeaders) {
+        let serverHeaders: string[] = [...defaultHeaders]
+
+        if (extraHeaders) {
+          serverHeaders = serverHeaders.concat(extraHeaders)
+        }
+
+        if (serverHeaders.length > 0) {
           await mainStack.setConfig('serverHeaders', {
             value: JSON.stringify(serverHeaders),
           })
