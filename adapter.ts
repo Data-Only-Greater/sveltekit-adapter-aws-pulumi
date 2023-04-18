@@ -35,8 +35,6 @@ export function adapter({
     'Accept',
     'Accept-Language',
     'If-None-Match',
-    'Sec-Fetch-Dest',
-    'Sec-Fetch-Mode',
     'Origin',
     'Referer',
   ],
