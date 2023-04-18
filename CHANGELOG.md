@@ -1,3 +1,10 @@
+## [1.4.4](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.4.3...v1.4.4) (2023-04-18)
+
+
+### Bug Fixes
+
+* try to solve linux issues ([b42821d](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/b42821dbae03a1483455729f55979c0db16d1e9e))
+
 ## [1.4.3](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.4.2...v1.4.3) (2023-04-18)
 
 
