@@ -1,3 +1,10 @@
+## [1.4.3](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.4.2...v1.4.3) (2023-04-18)
+
+
+### Bug Fixes
+
+* fix path to .env file ([6263139](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/626313982c9b8ddfcc7e58a1d67c1595ef3190b4))
+
 ## [1.4.2](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.4.1...v1.4.2) (2023-04-18)
 
 
