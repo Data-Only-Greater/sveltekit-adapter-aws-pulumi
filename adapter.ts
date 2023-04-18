@@ -70,6 +70,7 @@ export function adapter({
           {
             envVars: {
               TS_NODE_IGNORE: '^(?!.*(sveltekit-adapter-aws-pulumi)).*',
+              TS_NODE_TRANSPILE_ONLY: '1'
             },
           }
         )
@@ -106,6 +107,7 @@ export function adapter({
         const mainStack = await LocalWorkspace.createOrSelectStack(mainArgs, {
           envVars: {
             TS_NODE_IGNORE: '^(?!.*(sveltekit-adapter-aws-pulumi)).*',
+            TS_NODE_TRANSPILE_ONLY: '1'
           },
         })
 
