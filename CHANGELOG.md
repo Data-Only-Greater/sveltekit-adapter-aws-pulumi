@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.4.0...v1.4.1) (2023-04-18)
+
+
+### Bug Fixes
+
+* remove sec-fetch-* headers from default set ([e56175b](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/e56175b40eaa071e54a3e182c8fda35e13eeb315))
+
 # [1.4.0](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.3.3...v1.4.0) (2023-04-18)
 
 
