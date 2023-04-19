@@ -71,7 +71,7 @@ export function adapter({
             envVars: {
               TS_NODE_IGNORE: '^(?!.*(sveltekit-adapter-aws-pulumi)).*',
               TS_NODE_TYPE_CHECK: '0',
-              PULUMI_NODEJS_TRANSPILE_ONLY: "true"
+              PULUMI_NODEJS_TRANSPILE_ONLY: 'true',
             },
           }
         )
@@ -109,7 +109,7 @@ export function adapter({
           envVars: {
             TS_NODE_IGNORE: '^(?!.*(sveltekit-adapter-aws-pulumi)).*',
             TS_NODE_TYPE_CHECK: '0',
-            PULUMI_NODEJS_TRANSPILE_ONLY: "true"
+            PULUMI_NODEJS_TRANSPILE_ONLY: 'true',
           },
         })
 
