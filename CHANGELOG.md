@@ -1,3 +1,12 @@
+## [1.4.5](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.4.4...v1.4.5) (2023-04-19)
+
+
+### Bug Fixes
+
+* bug when FQDN not defined for main stack ([0d7aae4](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/0d7aae46b00ae451d4563b4f405bdeacd299b229))
+* running destroy script from symlinks ([237f2f8](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/237f2f8616fcafa7386c22a471056e604c4757a8))
+* skip type checking in ts-node to fix pulumi on linux ([2f5c00a](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/2f5c00a72b1f10b88874016aa91cb5271a76097c))
+
 ## [1.4.4](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.4.3...v1.4.4) (2023-04-18)
 
 
