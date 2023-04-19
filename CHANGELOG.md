@@ -1,3 +1,15 @@
+# [1.5.0](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.4.5...v1.5.0) (2023-04-19)
+
+
+### Bug Fixes
+
+* allow number of retries to equal maxRetries ([6f9a541](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/6f9a541f7109811dd853a8679969acb5cb703132))
+
+
+### Features
+
+* allow stateless stack destroy ([94bd3fc](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/94bd3fc56b72bb5fb8a046d3b3bbb6f263a8ed09))
+
 ## [1.4.5](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.4.4...v1.4.5) (2023-04-19)
 
 
