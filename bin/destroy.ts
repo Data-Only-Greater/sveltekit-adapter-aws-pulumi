@@ -84,7 +84,7 @@ export async function main(args: string[]): Promise<void> {
       })
     }
 
-    while (exitCode !== 0 && retries !== maxRetries) {
+    while (exitCode !== 0 && retries <= maxRetries) {
       if (retries > 0) {
         console.log(`Retry ${retries} of ${maxRetries}`)
       }
