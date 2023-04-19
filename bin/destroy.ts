@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
 import * as path from 'path'
-import { fileURLToPath } from 'url'
+import { realpathSync } from 'fs'
+import { pathToFileURL } from 'url'
 import { spawnSync } from 'child_process'
 import { createRequire } from 'node:module'
 
@@ -45,6 +46,12 @@ export async function main(args: string[]): Promise<void> {
   }
 }
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
+function wasCalledAsScript(): boolean {
+  const realPath = realpathSync(process.argv[1])
+  const realPathAsUrl = pathToFileURL(realPath).href
+  return import.meta.url === realPathAsUrl
+}
+
+if (wasCalledAsScript()) {
   main(process.argv)
 }
