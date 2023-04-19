@@ -19,9 +19,6 @@ const serverHeadersStr = pulumiConfig.get('serverHeaders')
 const serverArn = pulumiConfig.get('serverArn')
 const optionsArn = pulumiConfig.get('optionsArn')
 
-const [_, zoneName, ...MLDs] = FQDN!.split('.') || []
-const domainName = [zoneName, ...MLDs].join('.')
-
 let serverHeaders: string[] = []
 
 if (serverHeadersStr) {
@@ -34,6 +31,8 @@ const routerHandler = buildRouter(iamForLambda, edgePath!)
 let certificateArn: pulumi.Input<string> | undefined
 
 if (FQDN) {
+  const [_, zoneName, ...MLDs] = FQDN.split('.')
+  const domainName = [zoneName, ...MLDs].join('.')
   certificateArn = validateCertificate(FQDN!, domainName)
 }
 
