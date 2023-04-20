@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.5.0...v1.6.0) (2023-04-20)
+
+
+### Features
+
+* allow x-forwarded-host to be sent to origins ([06e53e8](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/06e53e81b5b5cfe12a9e86147a7630a09cbb932d))
+
 # [1.5.0](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.4.5...v1.5.0) (2023-04-19)
 
 
