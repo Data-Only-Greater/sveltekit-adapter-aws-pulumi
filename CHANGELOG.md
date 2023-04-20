@@ -1,3 +1,10 @@
+## [1.6.1](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.6.0...v1.6.1) (2023-04-20)
+
+
+### Bug Fixes
+
+* need to whitelist the host header ([4b84427](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/4b84427f61d327a2abab578cb97bb3a06268d3d6))
+
 # [1.6.0](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.5.0...v1.6.0) (2023-04-20)
 
 
