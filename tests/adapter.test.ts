@@ -17,6 +17,7 @@ vi.mock('@pulumi/pulumi/automation/index.js', () => {
     getAllConfig: vi.fn(() => {
       return {}
     }),
+    refresh: vi.fn(),
     up: vi.fn(() => {
       return {
         outputs: {
