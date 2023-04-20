@@ -1,3 +1,11 @@
+## [1.6.2](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.6.1...v1.6.2) (2023-04-20)
+
+
+### Bug Fixes
+
+* refresh stacks before calling up ([19c2a7f](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/19c2a7f9649c48fa2052e184849326ab1e5a786b))
+* requires version 2.1.1 of sveltekit-adapter-aws-base ([f90875e](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/f90875e854dce265f7224305146599710a36e266))
+
 ## [1.6.1](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.6.0...v1.6.1) (2023-04-20)
 
 
