@@ -35,6 +35,7 @@ export function adapter({
     'Accept',
     'Accept-Language',
     'If-None-Match',
+    'Host',
     'Origin',
     'Referer',
     'X-Forwarded-Host'
