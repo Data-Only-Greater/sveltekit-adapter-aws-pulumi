@@ -37,6 +37,7 @@ export function adapter({
     'If-None-Match',
     'Origin',
     'Referer',
+    'X-Forwarded-Host'
   ],
   extraHeaders = [],
   esbuildOptions = {},
