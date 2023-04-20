@@ -49,8 +49,6 @@ const config = {
     // See https://kit.svelte.dev/docs/adapters for more information about adapters.
     adapter: adapter({
       autoDeploy: true,
-      FQDN: 'sveltekit.applications.dog',
-      stackName: 'adapter-default-test',
     }),
   },
 }
@@ -63,14 +61,16 @@ export default config
 The following diagram shows the architecture deployed by this package. The key features are as follows:
 
 1. A CloudFront CDN
-1. An S3 bucket to serve prerendered and static content (via the CloudFront
-   CDN)
-1. An APIGateWay HTTP API with two routes:
-   1. The default route is integrated with a lambda that serves the SSR code
-   2. A second route for OPTIONS requests that integrates with a lambda used
-      to manage CORS
+1. An S3 bucket to serve prerendered and static content (secured using OAC)
+1. Two lambda functions with URL access (secured with AWS_IAM authentication):
+   1. A lambda that serves the SSR code
+   2. A lambda for OPTIONS requests used to manage preflight CORS
+1. A lambda@edge router that will:
+   1. Serve static content from the S3 bucket as the cloudfront default origin
+   2. Rewrite the cloudfront origin for requests which require SSR or use the
+      OPTIONS method and sign them.
 
-![Architecture](architecture.png)
+![Architecture](architecture.svg)
 
 ## Configuration
 
@@ -79,7 +79,7 @@ export interface AWSAdapterProps {
   artifactPath?: string // Build output directory (default: build)
   autoDeploy?: boolean // Should automatically deploy in SvelteKit build step (default: false)
   pulumiPath?: string // Path to Pulumi project for custom deployments (e.g. ${process.cwd()}/pulumi)
-  stackName?: string // Pulumi stack name (default: sveltekit-adapter-aws)
+  stackName?: string // Pulumi stack name (default: dev)
   serverHeaders?: string[] // Whitelist of headers for the SSR server. Defaults to ['Accept','Accept-Charset','Access-Control-Request-Method','Access-Control-Request-Headers','Accept-Datetime','Accept-Language','Origin','Referer']
   staticHeaders?: string[] // Whitelist of headers for the static files. Defaults to ['User-Agent', 'Referer']
   esbuildOptions?: any // Override or extend default esbuild options. Supports `external` (default `['node:*']`), `format` (default `cjs`), `target` (default `node16`), `banner` (default `{}`).
