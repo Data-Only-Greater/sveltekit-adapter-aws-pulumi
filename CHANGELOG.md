@@ -1,3 +1,10 @@
+## [1.6.3](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.6.2...v1.6.3) (2023-04-20)
+
+
+### Bug Fixes
+
+* destroy script needs the shebang so remove the test ([1b01426](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/1b01426a6d217cb8b530ddf4348fc07f5c3b8d64))
+
 ## [1.6.2](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.6.1...v1.6.2) (2023-04-20)
 
 
