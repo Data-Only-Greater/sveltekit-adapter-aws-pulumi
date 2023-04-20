@@ -38,7 +38,7 @@ export function adapter({
     'Host',
     'Origin',
     'Referer',
-    'X-Forwarded-Host'
+    'X-Forwarded-Host',
   ],
   extraHeaders = [],
   esbuildOptions = {},
@@ -88,6 +88,7 @@ export function adapter({
           memorySizeStr: { value: String(MEMORY_SIZE) },
         })
 
+        await serverStack.refresh()
         const serverStackUpResult = await serverStack.up({
           onOutput: console.info,
         })
@@ -142,6 +143,7 @@ export function adapter({
           })
         }
 
+        await mainStack.refresh()
         const mainStackUpResult = await mainStack.up({ onOutput: console.info })
         const mainAllowedOrigins = JSON.stringify(
           mainStackUpResult.outputs.allowedOrigins.value
