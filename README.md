@@ -89,7 +89,7 @@ export interface AWSAdapterProps {
 }
 ```
 
-## Environment Variables
+## Server Environment Variables
 
 Variables can be included in the environment of the SSR server by defining them
 in a `.env` file. For example: 
@@ -102,6 +102,10 @@ AUTH_TRUST_HOST=
 Values can be added to the `.env` file or defined as environment
 variables. If environment variables are defined they will overwrite the values
 in the .env file.
+
+## Destroy Command
+
+A script is provided to destroy the infrastructure.
 
 ## Dependencies
 
