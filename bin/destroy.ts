@@ -4,9 +4,9 @@ import * as path from 'path'
 import { realpathSync } from 'fs'
 import { fileURLToPath, pathToFileURL } from 'url'
 import { spawnSync, SpawnSyncReturns } from 'child_process'
-import { createRequire } from 'node:module'
+import { createRequire } from 'module'
 
-import parseArgs from 'minimist'
+import yargs from 'yargs/yargs';
 
 import { AWSAdapterProps } from '../adapter'
 
@@ -16,7 +16,18 @@ export async function main(args: string[]): Promise<void> {
   let pulumiPaths: string[] | undefined
   let stackName: string | undefined
 
-  const argv = parseArgs(args.slice(2))
+  var argv = yargs(process.argv.slice(2))
+    .usage('Usage: $0 [options]')
+    .command('$0', 'Destroy the pulumi stacks for sveltekit-adapter-aws-pulumi')
+    .example('$0', 'count the lines in the given file')
+    .alias('f', 'file')
+    .nargs('f', 1)
+    .describe('f', 'Load a file')
+    .demandOption(['f'])
+    .help('h')
+    .alias('h', 'help')
+    .epilog('copyright 2019')
+    .argv;
 
   let artifactPath = 'build'
 
