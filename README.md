@@ -78,24 +78,42 @@ The following diagram shows the architecture deployed by this package. The key f
 export interface AWSAdapterProps {
   artifactPath?: string // Build output directory (default: build)
   autoDeploy?: boolean // Should automatically deploy in SvelteKit build step (default: false)
-  pulumiPath?: string // Path to Pulumi project for custom deployments (e.g. ${process.cwd()}/pulumi)
-  stackName?: string // Pulumi stack name (default: dev)
-  serverHeaders?: string[] // Whitelist of headers for the SSR server. Defaults to ['Accept','Accept-Charset','Access-Control-Request-Method','Access-Control-Request-Headers','Accept-Datetime','Accept-Language','Origin','Referer']
-  staticHeaders?: string[] // Whitelist of headers for the static files. Defaults to ['User-Agent', 'Referer']
-  esbuildOptions?: any // Override or extend default esbuild options. Supports `external` (default `['node:*']`), `format` (default `cjs`), `target` (default `node16`), `banner` (default `{}`).
+  defaultHeaders?: string[] // Default whitelist of headers for the SSR server. (default: ['Accept','Accept-Language','If-None-Match','Host','Origin','Referer','X-Forwarded-Host'])
+  extraHeaders?: string[] // Additional headers to add to whitelist. (default: [])
+  esbuildOptions?: any // Override or extend default esbuild options for the SSR server. Supports `external` (default `['node:*']`), `format` (default `cjs`), `target` (default `node18`), `banner` (default `{}`).
   FQDN?: string // Full qualified domain name of CloudFront deployment (e.g. demo.example.com)
-  MEMORY_SIZE?: number // Memory size of SSR lambda in MB (default 128 MB)
-  zoneName?: string // The name of the hosted zone in Route 53 (defaults to the TLD from the FQDN)
+  memorySize?: number // Memory size of SSR lambda in MB (default: 128)
+  pulumiPaths: string[] // For internal use only
+  zoneName?: string // Region to deploy resources (default: us-east-2)
+  stackName?: string // Pulumi stack name (default: dev)
 }
 ```
+
+## Environment Variables
+
+Variables can be included in the environment of the SSR server by defining them
+in a `.env` file. For example: 
+
+```.env
+AUTH_SECRET=
+AUTH_TRUST_HOST=
+```
+
+Values can be added to the `.env` file or defined as environment
+variables. If environment variables are defined they will overwrite the values
+in the .env file.
 
 ## Dependencies
 
 This package utilises the [SvelteKit AWS Adapter Base
 Package](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-base) to
-prepare the files to be deployed.
+prepare the files to be deployed. The project is seeking collaborators to
+develop alternative IAC solutions. Please open an issue in the project if you
+are interested in collaborating.
 
 ## Credits
 
 This package is derived from [Mike
-Bild's](https://github.com/MikeBild/sveltekit-adapter-aws) AWS adapter for CDK.
+Bild's](https://github.com/MikeBild/sveltekit-adapter-aws) adapter for CDK
+and [James Bray's](https://github.com/yarbsemaj/sveltekit-adapter-lambda)
+adapter for Serverless Framework.

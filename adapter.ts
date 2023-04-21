@@ -17,20 +17,19 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 export interface AWSAdapterProps {
   artifactPath?: string
   autoDeploy?: boolean
-  stackName?: string
   defaultHeaders?: string[]
   extraHeaders?: string[]
   esbuildOptions?: any
   FQDN?: string
-  MEMORY_SIZE?: number
-  zoneName?: string
   pulumiPaths?: string[]
+  memorySize?: number
+  region?: string
+  stackName?: string
 }
 
 export function adapter({
   artifactPath = 'build',
   autoDeploy = false,
-  stackName = 'dev',
   defaultHeaders = [
     'Accept',
     'Accept-Language',
@@ -43,9 +42,10 @@ export function adapter({
   extraHeaders = [],
   esbuildOptions = {},
   FQDN,
-  MEMORY_SIZE,
-  zoneName = 'us-east-2',
+  memorySize,
   pulumiPaths = [],
+  region = 'us-east-2',
+  stackName = 'dev',
 }: AWSAdapterProps = {}) {
   /** @type {import('@sveltejs/kit').Adapter} */
   return {
@@ -79,13 +79,13 @@ export function adapter({
         )
 
         // Set the AWS region.
-        await serverStack.setConfig('aws:region', { value: zoneName })
+        await serverStack.setConfig('aws:region', { value: region })
 
         await serverStack.setAllConfig({
           projectPath: { value: process.cwd() },
           serverPath: { value: server_directory },
           optionsPath: { value: options_directory },
-          memorySizeStr: { value: String(MEMORY_SIZE) },
+          memorySizeStr: { value: String(memorySize) },
         })
 
         await serverStack.refresh()
@@ -117,7 +117,7 @@ export function adapter({
         })
 
         // Set the AWS region.
-        await mainStack.setConfig('aws:region', { value: zoneName })
+        await mainStack.setConfig('aws:region', { value: region })
 
         await mainStack.setAllConfig({
           edgePath: { value: edge_directory },
