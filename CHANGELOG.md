@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.6.3...v1.7.0) (2023-04-23)
+
+
+### Features
+
+* use yargs to provide help for destroy script ([0886360](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/0886360439ecaf0bd72a67cfd269beea2bbae502))
+
 ## [1.6.3](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.6.2...v1.6.3) (2023-04-20)
 
 
