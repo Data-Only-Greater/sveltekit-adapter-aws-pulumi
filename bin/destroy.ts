@@ -6,33 +6,51 @@ import { fileURLToPath, pathToFileURL } from 'url'
 import { spawnSync, SpawnSyncReturns } from 'child_process'
 import { createRequire } from 'module'
 
-import yargs from 'yargs/yargs';
+import yargs from 'yargs/yargs'
 
 import { AWSAdapterProps } from '../adapter'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
+
+interface Arguments {
+  [x: string]: unknown
+  _: (string | number)[]
+  $0: string
+  s: string | undefined
+  'default-projects': string | undefined
+}
 
 export async function main(args: string[]): Promise<void> {
   let pulumiPaths: string[] | undefined
   let stackName: string | undefined
 
   var argv = yargs(process.argv.slice(2))
-    .usage('Usage: $0 [options]')
-    .command('$0', 'Destroy the pulumi stacks for sveltekit-adapter-aws-pulumi')
-    .example('$0', 'count the lines in the given file')
-    .alias('f', 'file')
-    .nargs('f', 1)
-    .describe('f', 'Load a file')
-    .demandOption(['f'])
-    .help('h')
+    .usage('Usage: $0 [options] <artifactPath>')
+    .command('$0', '', (yargs) => {
+      yargs
+        .positional('artifactPath', {
+          describe: 'directory containing the build artifacts',
+          type: 'string',
+        })
+        .option('s', {
+          describe: 'stack name',
+          type: 'string',
+        })
+        .option('default-projects', {
+          describe: 'use the built-in Pulumi projects',
+          type: 'boolean',
+        })
+    })
     .alias('h', 'help')
-    .epilog('copyright 2019')
-    .argv;
+    .help()
+    .parseSync() as Arguments
+
+  console.log(argv)
 
   let artifactPath = 'build'
 
   if (argv._.length) {
-    artifactPath = argv._[0]
+    artifactPath = String(argv._[0])
   }
 
   const absArtifactPath = path.resolve(process.cwd(), artifactPath)

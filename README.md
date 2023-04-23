@@ -92,7 +92,7 @@ export interface AWSAdapterProps {
 ## Server Environment Variables
 
 Variables can be included in the environment of the SSR server by defining them
-in a `.env` file. For example: 
+in a `.env` file. For example:
 
 ```.env
 AUTH_SECRET=
