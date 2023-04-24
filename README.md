@@ -1,5 +1,5 @@
 [![npm](https://img.shields.io/npm/v/sveltekit-adapter-aws-pulumi)](https://www.npmjs.com/package/sveltekit-adapter-aws-pulumi)
-![stability-wip](https://img.shields.io/badge/stability-wip-lightgrey.svg)
+![stability-alpha](https://img.shields.io/badge/stability-alpha-f4d03f.svg)
 
 [![Unit tests](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/actions/workflows/unit_tests.yml/badge.svg)](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/actions/workflows/unit_tests.yml)
 [![Release](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/actions/workflows/release.yml/badge.svg)](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/actions/workflows/release.yml)
@@ -8,7 +8,8 @@
 
 # SvelteKit AWS Adapter for Pulumi
 
-This project contains a SvelteKit adapter to deploy SvelteKit to AWS using Pulumi.
+This project contains a SvelteKit adapter to deploy SvelteKit to AWS using
+Pulumi.
 
 ## How to use?
 
@@ -58,7 +59,8 @@ export default config
 
 ## Architecture
 
-The following diagram shows the architecture deployed by this package. The key features are as follows:
+The following diagram shows the architecture deployed by this package. The key
+features are as follows:
 
 1. A CloudFront CDN
 1. An S3 bucket to serve prerendered and static content (secured using OAC)
@@ -84,7 +86,7 @@ export interface AWSAdapterProps {
   FQDN?: string // Full qualified domain name of CloudFront deployment (e.g. demo.example.com)
   memorySize?: number // Memory size of SSR lambda in MB (default: 128)
   pulumiPaths: string[] // For internal use only
-  zoneName?: string // Region to deploy resources (default: us-east-2)
+  region?: string // Region to deploy resources (default: us-east-2)
   stackName?: string // Pulumi stack name (default: dev)
 }
 ```
