@@ -1,3 +1,5 @@
+# [2.0.0](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.8.0...v2.0.0) (2023-04-24)
+
 # [1.8.0](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.7.0...v1.8.0) (2023-04-24)
 
 
