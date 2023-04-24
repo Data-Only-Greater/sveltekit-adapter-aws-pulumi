@@ -30,7 +30,7 @@ This project contains a SvelteKit adapter to deploy SvelteKit to AWS using Pulum
 
 ### Destroy
 
-1. `npx destroy`
+1. `npx adapter-stack-destroy`
 
 ## Basic setup example
 
@@ -105,7 +105,34 @@ in the .env file.
 
 ## Destroy Command
 
-A script is provided to destroy the infrastructure.
+A script is provided to destroy the infrastructure, with the following
+signature:
+
+```
+adapter-stack-destroy [artifactPath]
+
+Destroy the SvelteKit adapter's Pulumi stacks
+
+Positionals:
+  artifactPath  directory containing the build artifacts. Defaults to 'build'
+                                                                        [string]
+
+Options:
+      --version           Show version number                          [boolean]
+  -s                      stack name                                    [string]
+      --default-projects  use the built-in Pulumi projects             [boolean]
+  -f, --force             cancel ongoing stack updates                 [boolean]
+  -h, --help              Show help                                    [boolean]
+```
+
+When running locally, `adapter-stack-destroy` can be called with no arguments
+and it will remove the Pulumi stacks based on a config file in the `build`
+directory. If an alternative artifact path was used, pass this value to the
+script.
+
+When running in a stateless environment, such as CI, passing the option `-s`
+with a stack name and `--default-projects` will delete the given stack based
+on the projects defined within the package.
 
 ## Dependencies
 

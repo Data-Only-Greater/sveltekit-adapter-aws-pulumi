@@ -28,7 +28,7 @@
   },
   "types": "./index.d.ts",
   "bin": {
-    "destroy": "./bin/destroy.js"
+    "adapter-stack-destroy": "./bin/destroy.js"
   },
   "scripts": {
     "build": "yarn clean && tsc --project tsconfig.build.json && yarn copy-files",
@@ -62,6 +62,9 @@
     "lodash": "^4.17.21",
     "sveltekit-adapter-aws-base": "^2.1.1",
     "yargs": "^17.7.1"
+  },
+  "resolutions": {
+    "vitest/**/vite": "~4.2.0"
   },
   "release": {
     "branches": [

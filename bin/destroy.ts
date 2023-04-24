@@ -16,41 +16,52 @@ interface Arguments {
   [x: string]: unknown
   _: (string | number)[]
   $0: string
+  f: boolean
   s: string | undefined
-  'default-projects': string | undefined
+  artifactPath: string
+  defaultProjects: boolean
+  force: boolean
 }
 
 export async function main(args: string[]): Promise<void> {
   let pulumiPaths: string[] | undefined
   let stackName: string | undefined
 
-  var argv = yargs(process.argv.slice(2))
-    .usage('Usage: $0 [options] <artifactPath>')
-    .command('$0', '', (yargs) => {
-      yargs
-        .positional('artifactPath', {
-          describe: 'directory containing the build artifacts',
-          type: 'string',
-        })
-        .option('s', {
-          describe: 'stack name',
-          type: 'string',
-        })
-        .option('default-projects', {
-          describe: 'use the built-in Pulumi projects',
-          type: 'boolean',
-        })
-    })
+  var argv = yargs(args.slice(2))
+    .scriptName('adapter-stack-destroy')
+    .usage(
+      '$0 [artifactPath]',
+      "Destroy the SvelteKit adapter's Pulumi stacks",
+      (yargs) => {
+        return yargs
+          .positional('artifactPath', {
+            describe:
+              "directory containing the build artifacts. Defaults to 'build'",
+            type: 'string',
+          })
+          .option('s', {
+            describe: 'stack name',
+            type: 'string',
+          })
+          .option('default-projects', {
+            describe: 'use the built-in Pulumi projects',
+            type: 'boolean',
+          })
+          .option('f', {
+            alias: 'force',
+            describe: 'cancel ongoing stack updates',
+            type: 'boolean',
+          })
+      }
+    )
     .alias('h', 'help')
     .help()
     .parseSync() as Arguments
 
-  console.log(argv)
-
   let artifactPath = 'build'
 
-  if (argv._.length) {
-    artifactPath = String(argv._[0])
+  if (argv.artifactPath) {
+    artifactPath = argv.artifactPath
   }
 
   const absArtifactPath = path.resolve(process.cwd(), artifactPath)
@@ -69,7 +80,7 @@ export async function main(args: string[]): Promise<void> {
     }
   }
 
-  if ('default-projects' in argv) {
+  if (argv.defaultProjects) {
     const serverPath = path.resolve(__dirname, '..', 'stacks', 'server')
     const mainPath = path.resolve(__dirname, '..', 'stacks', 'main')
     pulumiPaths = [serverPath, mainPath]
@@ -82,11 +93,11 @@ export async function main(args: string[]): Promise<void> {
   let abort: boolean = false
 
   if (pulumiPaths === undefined) {
-    console.log('Paths to pulumi projects could not be determined.')
+    console.log('Paths to pulumi projects could not be determined')
     abort = true
   }
 
-  if (pulumiPaths === undefined) {
+  if (stackName === undefined) {
     console.log('Stack name could not be determined')
     abort = true
   }
@@ -105,7 +116,7 @@ export async function main(args: string[]): Promise<void> {
     retries = 0
     exitCode = 1
 
-    if ('f' in argv || 'force' in argv) {
+    if (argv.f || argv.force) {
       spawnSync('pulumi', ['cancel', '-s', stackName!, '-y'], {
         cwd: pulumiPath,
         stdio: [process.stdin, process.stdout, process.stderr],
