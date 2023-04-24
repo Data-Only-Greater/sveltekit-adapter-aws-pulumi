@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.7.0...v1.8.0) (2023-04-24)
+
+
+### Features
+
+* rename and test adapter-stack-destroy script ([b64c9d1](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/b64c9d18b6de799d819cd8af01de283185e7e2e1))
+
 # [1.7.0](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v1.6.3...v1.7.0) (2023-04-23)
 
 
