@@ -1,3 +1,10 @@
+## [2.0.2](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v2.0.1...v2.0.2) (2023-04-30)
+
+
+### Bug Fixes
+
+* change james bray credit to "inspired by" ([378eb35](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/378eb35172a17728e3ab2ca9dad1cb6c9fdb0f8a))
+
 ## [2.0.1](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v2.0.0...v2.0.1) (2023-04-24)
 
 
