@@ -146,7 +146,9 @@ are interested in collaborating.
 
 ## Credits
 
-This package is derived from [Mike
-Bild's](https://github.com/MikeBild/sveltekit-adapter-aws) adapter for CDK
-and [James Bray's](https://github.com/yarbsemaj/sveltekit-adapter-lambda)
-adapter for Serverless Framework.
+This package is derived from [Mike Bild's](
+https://github.com/MikeBild/sveltekit-adapter-aws ) adapter for CDK and
+inspired by [James Bray's](
+https://github.com/yarbsemaj/sveltekit-adapter-lambda ) adapter for Serverless
+Framework.
+
