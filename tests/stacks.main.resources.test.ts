@@ -101,6 +101,7 @@ describe('stacks/main/resources.ts', () => {
 
     for (const fileName of fileArray) {
       const posixFilePath = fileName.split(path.sep).join(path.posix.sep)
+      console.log(mocks.resources)
       expect(mocks.resources).toHaveProperty(posixFilePath)
 
       const item = mocks.resources[posixFilePath]

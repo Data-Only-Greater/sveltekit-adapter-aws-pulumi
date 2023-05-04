@@ -45,7 +45,8 @@ export function buildLambda(
   iamForLambda: aws.iam.Role,
   codePath: string,
   environment: object = {},
-  memorySize: number = 128
+  memorySize: number = 128,
+  invokeMode: string = 'BUFFERED'
 ): aws.lambda.FunctionUrl {
   const lambdaHandler = new aws.lambda.Function(registerName(name), {
     code: new pulumi.asset.FileArchive(codePath),
@@ -64,6 +65,7 @@ export function buildLambda(
   const lambdaURL = new aws.lambda.FunctionUrl(`${name}URL`, {
     functionName: lambdaHandler.arn,
     authorizationType: 'AWS_IAM',
+    invokeMode: invokeMode,
   })
 
   return lambdaURL

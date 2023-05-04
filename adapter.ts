@@ -24,6 +24,7 @@ export interface AWSAdapterProps {
   pulumiPaths?: string[]
   memorySize?: number
   region?: string
+  serverStreaming?: boolean
   stackName?: string
 }
 
@@ -45,6 +46,7 @@ export function adapter({
   memorySize,
   pulumiPaths = [],
   region = 'us-east-2',
+  serverStreaming = false,
   stackName = 'dev',
 }: AWSAdapterProps = {}) {
   /** @type {import('@sveltejs/kit').Adapter} */
@@ -52,7 +54,12 @@ export function adapter({
     name: 'adapter-aws-pulumi',
     async adapt(builder: any) {
       const { server_directory, static_directory, prerendered_directory } =
-        await buildServer(builder, artifactPath, esbuildOptions)
+        await buildServer(
+          builder,
+          artifactPath,
+          esbuildOptions,
+          serverStreaming
+        )
 
       const options_directory = await buildOptions(builder, artifactPath)
 
@@ -87,6 +94,12 @@ export function adapter({
           optionsPath: { value: options_directory },
           memorySizeStr: { value: String(memorySize) },
         })
+
+        if (serverStreaming) {
+          await serverStack.setConfig('serverInvokeMode', {
+            value: 'RESPONSE_STREAM',
+          })
+        }
 
         await serverStack.refresh()
         const serverStackUpResult = await serverStack.up({

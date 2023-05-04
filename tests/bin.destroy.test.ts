@@ -1,6 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import { spawnSync } from 'child_process'
+import * as child_process from 'child_process'
 
 import { getTempDir } from './utils'
 
@@ -27,7 +27,7 @@ describe('bin/destroy.ts', () => {
 
   it('main (artifactPath)', async () => {
     // @ts-ignore
-    spawnSync = vi.fn().mockReturnValue({ status: 0 })
+    child_process.spawnSync = vi.fn().mockReturnValue({ status: 0 })
     const tmpDir = getTempDir()
     const propsPath = path.join(tmpDir, '.adapterprops.json')
 
@@ -44,10 +44,10 @@ describe('bin/destroy.ts', () => {
 
     fs.rmSync(tmpDir, { recursive: true })
 
-    let spawnSyncMock = <any>spawnSync
+    let spawnSyncMock = <any>child_process.spawnSync
     const args = spawnSyncMock.mock.calls[0]
 
-    expect(spawnSync).toHaveBeenCalledTimes(2)
+    expect(child_process.spawnSync).toHaveBeenCalledTimes(2)
     expect(args).toEqual(
       expect.arrayContaining([
         'pulumi',
@@ -61,7 +61,7 @@ describe('bin/destroy.ts', () => {
 
   it('main (-s --default-projects)', async () => {
     // @ts-ignore
-    spawnSync = vi.fn().mockReturnValue({ status: 0 })
+    child_process.spawnSync = vi.fn().mockReturnValue({ status: 0 })
 
     const expectedStackName = 'mock'
     const argv = [
@@ -73,10 +73,10 @@ describe('bin/destroy.ts', () => {
     ]
     await destroy.main(argv)
 
-    let spawnSyncMock = <any>spawnSync
+    let spawnSyncMock = <any>child_process.spawnSync
     const args = spawnSyncMock.mock.calls[0]
 
-    expect(spawnSync).toHaveBeenCalledTimes(2)
+    expect(child_process.spawnSync).toHaveBeenCalledTimes(2)
     expect(args).toEqual(
       expect.arrayContaining([
         'pulumi',
@@ -90,7 +90,7 @@ describe('bin/destroy.ts', () => {
 
   it('main (-s --default-projects -f)', async () => {
     // @ts-ignore
-    spawnSync = vi.fn().mockReturnValue({ status: 0 })
+    child_process.spawnSync = vi.fn().mockReturnValue({ status: 0 })
 
     const expectedStackName = 'mock'
     const argv = [
@@ -103,10 +103,10 @@ describe('bin/destroy.ts', () => {
     ]
     await destroy.main(argv)
 
-    let spawnSyncMock = <any>spawnSync
+    let spawnSyncMock = <any>child_process.spawnSync
     const args = spawnSyncMock.mock.calls[0]
 
-    expect(spawnSync).toHaveBeenCalledTimes(4)
+    expect(child_process.spawnSync).toHaveBeenCalledTimes(4)
     expect(args).toEqual(
       expect.arrayContaining([
         'pulumi',
@@ -120,7 +120,7 @@ describe('bin/destroy.ts', () => {
 
   it('main (-s --default-projects --force)', async () => {
     // @ts-ignore
-    spawnSync = vi.fn().mockReturnValue({ status: 0 })
+    child_process.spawnSync = vi.fn().mockReturnValue({ status: 0 })
 
     const expectedStackName = 'mock'
     const argv = [
@@ -133,10 +133,10 @@ describe('bin/destroy.ts', () => {
     ]
     await destroy.main(argv)
 
-    let spawnSyncMock = <any>spawnSync
+    let spawnSyncMock = <any>child_process.spawnSync
     const args = spawnSyncMock.mock.calls[0]
 
-    expect(spawnSync).toHaveBeenCalledTimes(4)
+    expect(child_process.spawnSync).toHaveBeenCalledTimes(4)
     expect(args).toEqual(
       expect.arrayContaining([
         'pulumi',
@@ -150,7 +150,7 @@ describe('bin/destroy.ts', () => {
 
   it('main (-s --default-projects) retries', async () => {
     // @ts-ignore
-    spawnSync = vi.fn().mockReturnValue({ status: 1 })
+    child_process.spawnSync = vi.fn().mockReturnValue({ status: 1 })
 
     const expectedStackName = 'mock'
     const argv = [
@@ -162,10 +162,10 @@ describe('bin/destroy.ts', () => {
     ]
     await destroy.main(argv)
 
-    let spawnSyncMock = <any>spawnSync
+    let spawnSyncMock = <any>child_process.spawnSync
     const args = spawnSyncMock.mock.calls[0]
 
-    expect(spawnSync).toHaveBeenCalledTimes(8)
+    expect(child_process.spawnSync).toHaveBeenCalledTimes(8)
     expect(args).toEqual(
       expect.arrayContaining([
         'pulumi',
@@ -179,7 +179,7 @@ describe('bin/destroy.ts', () => {
 
   it('main (no args)', async () => {
     // @ts-ignore
-    spawnSync = vi.fn<typeof spawnSync>().mockReturnValue({ status: 0 })
+    child_process.spawnSync = vi.fn<typeof spawnSync>().mockReturnValue({ status: 0 })
     const tmpDir = getTempDir()
     const buildDir = path.join(tmpDir, 'build')
     fs.mkdirSync(buildDir)
@@ -202,10 +202,10 @@ describe('bin/destroy.ts', () => {
 
     fs.rmSync(tmpDir, { recursive: true })
 
-    let spawnSyncMock = <any>spawnSync
+    let spawnSyncMock = <any>child_process.spawnSync
     const args = spawnSyncMock.mock.calls[0]
 
-    expect(spawnSync).toHaveBeenCalledTimes(2)
+    expect(child_process.spawnSync).toHaveBeenCalledTimes(2)
     expect(args).toEqual(
       expect.arrayContaining([
         'pulumi',

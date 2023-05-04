@@ -87,6 +87,7 @@ export interface AWSAdapterProps {
   memorySize?: number // Memory size of SSR lambda in MB (default: 128)
   pulumiPaths: string[] // For internal use only
   region?: string // Region to deploy resources (default: us-east-2)
+  serverStreaming?: boolean // Use lambda streaming responses for SSR server
   stackName?: string // Pulumi stack name (default: dev)
 }
 ```
@@ -146,9 +147,6 @@ are interested in collaborating.
 
 ## Credits
 
-This package is derived from [Mike Bild's](
-https://github.com/MikeBild/sveltekit-adapter-aws ) adapter for CDK and
-inspired by [James Bray's](
-https://github.com/yarbsemaj/sveltekit-adapter-lambda ) adapter for Serverless
+This package is derived from [Mike Bild's](https://github.com/MikeBild/sveltekit-adapter-aws) adapter for CDK and
+inspired by [James Bray's](https://github.com/yarbsemaj/sveltekit-adapter-lambda) adapter for Serverless
 Framework.
-

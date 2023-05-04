@@ -9,6 +9,7 @@ const serverPath = pulumiConfig.get('serverPath')
 const optionsPath = pulumiConfig.get('optionsPath')
 const memorySizeStr = pulumiConfig.get('memorySize')
 const allowedOriginsStr = pulumiConfig.get('allowedOrigins')
+let serverInvokeMode = pulumiConfig.get('serverInvokeMode')
 
 let memorySize: number = 128
 
@@ -22,6 +23,10 @@ if (allowedOriginsStr) {
   optionsEnv['ALLOWED_ORIGINS'] = allowedOriginsStr
 }
 
+if (!serverInvokeMode) {
+  serverInvokeMode = 'BUFFERED'
+}
+
 const iamForLambda = getLambdaRole()
 const environment = getEnvironment(projectPath!)
 
@@ -30,7 +35,8 @@ const serverURL = buildLambda(
   iamForLambda,
   serverPath!,
   environment.parsed,
-  memorySize
+  memorySize,
+  serverInvokeMode
 )
 
 const optionsURL = buildLambda(
@@ -40,12 +46,13 @@ const optionsURL = buildLambda(
   optionsEnv
 )
 
-export const serverArn = serverURL.functionArn
-export const serverDomain = serverURL.functionUrl.apply((endpoint) =>
-  endpoint.split('://')[1].slice(0, -1)
+export const serverArn: pulumi.Output<string> = serverURL.functionArn
+export const serverDomain: pulumi.Output<string> = serverURL.functionUrl.apply(
+  (endpoint) => endpoint.split('://')[1].slice(0, -1)
 )
 
-export const optionsArn = optionsURL.functionArn
-export const optionsDomain = optionsURL.functionUrl.apply((endpoint) =>
-  endpoint.split('://')[1].slice(0, -1)
-)
+export const optionsArn: pulumi.Output<string> = optionsURL.functionArn
+export const optionsDomain: pulumi.Output<string> =
+  optionsURL.functionUrl.apply((endpoint) =>
+    endpoint.split('://')[1].slice(0, -1)
+  )
