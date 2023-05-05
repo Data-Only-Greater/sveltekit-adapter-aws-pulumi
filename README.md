@@ -87,7 +87,7 @@ export interface AWSAdapterProps {
   memorySize?: number // Memory size of SSR lambda in MB (default: 128)
   pulumiPaths: string[] // For internal use only
   region?: string // Region to deploy resources (default: us-east-2)
-  serverStreaming?: boolean // Use lambda streaming responses for SSR server
+  serverStreaming?: boolean // Use lambda streaming responses for SSR server (default: false)
   stackName?: string // Pulumi stack name (default: dev)
 }
 ```
