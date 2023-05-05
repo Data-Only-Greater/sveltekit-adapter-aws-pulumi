@@ -63,6 +63,9 @@
     "sveltekit-adapter-aws-base": "^2.2.2",
     "yargs": "^17.7.2"
   },
+  "peerDependencies": {
+    "@sveltejs/kit": "^1.15.2"
+  },
   "resolutions": {
     "vitest/**/vite": "~4.2.0"
   },
