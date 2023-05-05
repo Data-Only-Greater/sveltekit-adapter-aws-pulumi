@@ -60,7 +60,7 @@
     "dotenv": "^16.0.3",
     "folder-hash": "^4.0.4",
     "lodash": "^4.17.21",
-    "sveltekit-adapter-aws-base": "^2.2.1",
+    "sveltekit-adapter-aws-base": "^2.2.2",
     "yargs": "^17.7.2"
   },
   "resolutions": {
