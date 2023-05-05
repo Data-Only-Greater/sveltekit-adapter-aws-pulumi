@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v2.1.0...v2.1.1) (2023-05-05)
+
+
+### Bug Fixes
+
+* enforce optional config removal when unset ([0ad4546](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/0ad4546429b6fd14243cd7211d2e3f6bd639439e))
+
 # [2.1.0](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v2.0.2...v2.1.0) (2023-05-05)
 
 
