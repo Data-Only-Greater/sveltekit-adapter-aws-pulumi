@@ -1,3 +1,10 @@
+## [2.1.3](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v2.1.2...v2.1.3) (2023-05-05)
+
+
+### Bug Fixes
+
+* upgrade sveltekit-adapter-aws-base version ([4342158](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/43421581e08d67b0c13b764caf15a315e8566789))
+
 ## [2.1.2](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v2.1.1...v2.1.2) (2023-05-05)
 
 
