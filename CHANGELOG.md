@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v2.0.2...v2.1.0) (2023-05-05)
+
+
+### Features
+
+* Add option to use streaming for SSR server ([1c7708c](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/1c7708c218507b6d3b60c69ed4f74db19ab5e5f2))
+
 ## [2.0.2](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v2.0.1...v2.0.2) (2023-04-30)
 
 
