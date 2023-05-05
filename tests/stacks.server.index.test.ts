@@ -65,9 +65,9 @@ describe('stacks/server/index.ts', () => {
     expect(resources.getLambdaRole).toHaveBeenCalledTimes(1)
     expect(resources.buildLambda).toHaveBeenCalledTimes(2)
 
-    expect(mockBuildLambda.calls[0][3]).toStrictEqual({ MOCK: '' })
-    expect(mockBuildLambda.calls[0][4]).toStrictEqual(256)
-    expect(mockBuildLambda.calls[1][3]).toStrictEqual({
+    expect(mockBuildLambda.mock.calls[0][3]).toStrictEqual({ MOCK: '' })
+    expect(mockBuildLambda.mock.calls[0][4]).toStrictEqual(256)
+    expect(mockBuildLambda.mock.calls[1][3]).toStrictEqual({
       ALLOWED_ORIGINS: '[example.com]',
     })
 
@@ -117,8 +117,8 @@ describe('stacks/server/index.ts', () => {
 
     infra = await import('../stacks/server')
 
-    expect(mockBuildLambda.calls[0][4]).toStrictEqual(128)
-    expect(mockBuildLambda.calls[1][3]).toStrictEqual({})
+    expect(mockBuildLambda.mock.calls[0][4]).toStrictEqual(128)
+    expect(mockBuildLambda.mock.calls[1][3]).toStrictEqual({})
 
     fs.rmSync(tmpDir, { recursive: true })
   })
