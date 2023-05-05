@@ -90,7 +90,7 @@ export function adapter({
           projectPath: { value: process.cwd() },
           serverPath: { value: server_directory },
           optionsPath: { value: options_directory },
-          memorySizeStr: { value: String(memorySize) },
+          memorySize: { value: String(memorySize) },
         })
 
         if (serverStreaming) {
