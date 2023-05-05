@@ -1,3 +1,10 @@
+## [2.1.2](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v2.1.1...v2.1.2) (2023-05-05)
+
+
+### Bug Fixes
+
+* fix memorySize config key ([f796d85](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/f796d85c38f8fa0866c9adc35b1fce254b3de82b))
+
 ## [2.1.1](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v2.1.0...v2.1.1) (2023-05-05)
 
 
