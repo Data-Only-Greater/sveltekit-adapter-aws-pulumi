@@ -1,3 +1,11 @@
+## [2.1.4](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v2.1.3...v2.1.4) (2023-05-05)
+
+
+### Bug Fixes
+
+* add sveltekit as a peer dependency ([a755bb3](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/a755bb3f832eea1fa50c506f6e613db3c7e53467))
+* upgrade sveltekit-adapter-aws-base version ([2d09c02](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/2d09c02cc3d6046bf35d02890c74f418eb2918fb))
+
 ## [2.1.3](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v2.1.2...v2.1.3) (2023-05-05)
 
 
