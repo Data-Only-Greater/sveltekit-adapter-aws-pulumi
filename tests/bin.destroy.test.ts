@@ -179,7 +179,7 @@ describe('bin/destroy.ts', () => {
 
   it('main (no args)', async () => {
     // @ts-ignore
-    child_process.spawnSync = vi.fn<typeof spawnSync>().mockReturnValue({ status: 0 })
+    child_process.spawnSync = vi.fn().mockReturnValue({ status: 0 })
     const tmpDir = getTempDir()
     const buildDir = path.join(tmpDir, 'build')
     fs.mkdirSync(buildDir)

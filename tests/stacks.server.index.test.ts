@@ -117,7 +117,6 @@ describe('stacks/server/index.ts', () => {
 
     infra = await import('../stacks/server')
 
-    expect(mockBuildLambda.mock.calls[0][4]).toStrictEqual(128)
     expect(mockBuildLambda.mock.calls[1][3]).toStrictEqual({})
 
     fs.rmSync(tmpDir, { recursive: true })

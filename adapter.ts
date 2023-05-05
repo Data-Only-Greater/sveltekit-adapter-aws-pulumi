@@ -43,7 +43,7 @@ export function adapter({
   extraHeaders = [],
   esbuildOptions = {},
   FQDN,
-  memorySize,
+  memorySize = 128,
   pulumiPaths = [],
   region = 'us-east-2',
   serverStreaming = false,
@@ -85,10 +85,8 @@ export function adapter({
           }
         )
 
-        // Set the AWS region.
-        await serverStack.setConfig('aws:region', { value: region })
-
         await serverStack.setAllConfig({
+          'aws:region': { value: region },
           projectPath: { value: process.cwd() },
           serverPath: { value: server_directory },
           optionsPath: { value: options_directory },
@@ -99,6 +97,8 @@ export function adapter({
           await serverStack.setConfig('serverInvokeMode', {
             value: 'RESPONSE_STREAM',
           })
+        } else {
+          await serverStack.removeConfig('serverInvokeMode')
         }
 
         await serverStack.refresh()
@@ -129,10 +129,8 @@ export function adapter({
           },
         })
 
-        // Set the AWS region.
-        await mainStack.setConfig('aws:region', { value: region })
-
         await mainStack.setAllConfig({
+          'aws:region': { value: region },
           edgePath: { value: edge_directory },
           staticPath: { value: static_directory },
           prerenderedPath: { value: prerendered_directory },
@@ -142,6 +140,8 @@ export function adapter({
 
         if (FQDN) {
           await mainStack.setConfig('FQDN', { value: FQDN })
+        } else {
+          await mainStack.removeConfig('FQDN')
         }
 
         let serverHeaders: string[] = [...defaultHeaders]
@@ -154,6 +154,8 @@ export function adapter({
           await mainStack.setConfig('serverHeaders', {
             value: JSON.stringify(serverHeaders),
           })
+        } else {
+          await mainStack.removeConfig('serverHeaders')
         }
 
         await mainStack.refresh()
@@ -162,30 +164,14 @@ export function adapter({
           mainStackUpResult.outputs.allowedOrigins.value
         )
 
-        let serverAllowedOrigins: string = ''
-        const serverConfig = await serverStack.getAllConfig()
+        // Call the server stack setting the allowed origins
+        await serverStack.setConfig('allowedOrigins', {
+          value: mainAllowedOrigins,
+        })
 
-        if ('sveltekit-aws-adapter-server:allowedOrigins' in serverConfig) {
-          serverAllowedOrigins =
-            serverConfig['sveltekit-aws-adapter-server:allowedOrigins'].value
-        }
-
-        if (serverAllowedOrigins !== mainAllowedOrigins) {
-          // Call the server stack setting the allowed origins
-          await serverStack.setConfig('allowedOrigins', {
-            value: mainAllowedOrigins,
-          })
-
-          const serverStackUpUpdate = await serverStack.up({
-            onOutput: console.info,
-          })
-        }
-
-        // Fix TS_NODE_IGNORE when package is installed to node_modules
-        // if (pulumiPath === `${__dirname}/pulumi`) {
-        //   default_env['TS_NODE_IGNORE'] =
-        //     '^(?!.*(sveltekit-adapter-aws-pulumi)).*'
-        // }
+        await serverStack.up({
+          onOutput: console.info,
+        })
 
         adapterProps.pulumiPaths = [serverPath, mainPath]
         adapterProps.stackName = stackName

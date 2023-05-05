@@ -11,11 +11,7 @@ const memorySizeStr = pulumiConfig.get('memorySize')
 const allowedOriginsStr = pulumiConfig.get('allowedOrigins')
 let serverInvokeMode = pulumiConfig.get('serverInvokeMode')
 
-let memorySize: number = 128
-
-if (memorySizeStr) {
-  memorySize = Number(memorySizeStr)
-}
+const memorySize = Number(memorySizeStr!)
 
 let optionsEnv: any = {}
 

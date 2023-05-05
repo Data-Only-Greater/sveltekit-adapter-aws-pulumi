@@ -12,12 +12,13 @@ import { getTempDir } from './utils'
 vi.mock('sveltekit-adapter-aws-base')
 vi.mock('@pulumi/pulumi/automation/index.js', () => {
   const Stack = {
-    setConfig: vi.fn(),
-    setAllConfig: vi.fn(),
     getAllConfig: vi.fn(() => {
       return {}
     }),
     refresh: vi.fn(),
+    removeConfig: vi.fn(),
+    setConfig: vi.fn(),
+    setAllConfig: vi.fn(),
     up: vi.fn(() => {
       return {
         outputs: {
