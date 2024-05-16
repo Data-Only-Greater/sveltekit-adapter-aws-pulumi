@@ -8,7 +8,7 @@ import {
   buildCDN,
   createAliasRecord,
   buildInvalidator,
-} from './resources'
+} from './resources.js'
 
 const pulumiConfig = new pulumi.Config()
 const edgePath = pulumiConfig.get('edgePath')
@@ -42,7 +42,7 @@ const distribution = buildCDN(
   bucket,
   serverHeaders,
   FQDN,
-  certificateArn
+  certificateArn,
 )
 
 if (FQDN) {
