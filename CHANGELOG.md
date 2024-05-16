@@ -1,3 +1,10 @@
+## [3.0.1](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v3.0.0...v3.0.1) (2024-05-16)
+
+
+### Bug Fixes
+
+* coverage-v8 is a dev dependency ([56cc43f](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/56cc43f19888e8e8291e20ecba046bf99a04780c))
+
 ## [3.0.0](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v2.1.4...v3.0.0) (2024-05-16)
 
 
