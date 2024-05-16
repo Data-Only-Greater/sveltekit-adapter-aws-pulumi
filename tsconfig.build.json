@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
+    "module": "nodenext",
     "target": "es2022",
-    "module": "es2022",
-    "moduleResolution": "node",
+    "moduleResolution": "nodenext",
     "declaration": true,
     "strict": true,
     "noImplicitAny": true,
@@ -20,7 +20,7 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "allowJs": false,
-    "typeRoots": ["./node_modules/@types"],
+    "typeRoots": ["./node_modules/@types/", "./node_modules"],
     "types": ["vitest/globals"],
     "outDir": "dist"
   },

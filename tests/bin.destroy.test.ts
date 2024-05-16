@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as child_process from 'child_process'
 
-import { getTempDir } from './utils'
+import { getTempDir } from './utils.js'
 
 vi.mock('child_process', async (importOriginal) => {
   const mod: any = await importOriginal()
@@ -13,11 +13,11 @@ vi.mock('child_process', async (importOriginal) => {
 })
 
 describe('bin/destroy.ts', () => {
-  let destroy: typeof import('../bin/destroy')
+  let destroy: typeof import('../bin/destroy.js')
 
   beforeEach(async () => {
     vi.resetModules()
-    destroy = await import('../bin/destroy')
+    destroy = await import('../bin/destroy.js')
   })
 
   afterEach(() => {
@@ -55,7 +55,7 @@ describe('bin/destroy.ts', () => {
         expect.objectContaining({
           cwd: expectedPulumiPaths[0],
         }),
-      ])
+      ]),
     )
   })
 
@@ -84,7 +84,7 @@ describe('bin/destroy.ts', () => {
         expect.objectContaining({
           cwd: path.resolve(process.cwd(), 'stacks', 'server'),
         }),
-      ])
+      ]),
     )
   })
 
@@ -114,7 +114,7 @@ describe('bin/destroy.ts', () => {
         expect.objectContaining({
           cwd: path.resolve(process.cwd(), 'stacks', 'server'),
         }),
-      ])
+      ]),
     )
   })
 
@@ -144,7 +144,7 @@ describe('bin/destroy.ts', () => {
         expect.objectContaining({
           cwd: path.resolve(process.cwd(), 'stacks', 'server'),
         }),
-      ])
+      ]),
     )
   })
 
@@ -173,7 +173,7 @@ describe('bin/destroy.ts', () => {
         expect.objectContaining({
           cwd: path.resolve(process.cwd(), 'stacks', 'server'),
         }),
-      ])
+      ]),
     )
   })
 
@@ -213,7 +213,7 @@ describe('bin/destroy.ts', () => {
         expect.objectContaining({
           cwd: expectedPulumiPaths[0],
         }),
-      ])
+      ]),
     )
   })
 

@@ -7,7 +7,7 @@ import {
   buildRouter,
 } from 'sveltekit-adapter-aws-base'
 
-import { getTempDir } from './utils'
+import { getTempDir } from './utils.js'
 
 vi.mock('sveltekit-adapter-aws-base')
 vi.mock('@pulumi/pulumi/automation/index.js', () => {
@@ -51,11 +51,11 @@ vi.mock('@pulumi/pulumi/automation/index.js', () => {
 })
 
 describe('adapter.ts', () => {
-  let adapter: typeof import('../adapter')
+  let adapter: typeof import('../adapter.js')
 
   beforeEach(async () => {
     vi.resetModules()
-    adapter = await import('../adapter')
+    adapter = await import('../adapter.js')
   })
 
   it('Store adapter props', async () => {

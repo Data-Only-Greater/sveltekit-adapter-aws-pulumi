@@ -1,14 +1,14 @@
 import * as pulumi from '@pulumi/pulumi'
 
-import { MyMocks, promiseOf } from './utils'
-import * as resources from '../stacks/main/resources'
+import { MyMocks, promiseOf } from './utils.js'
+import * as resources from '../stacks/main/resources.js'
 
 vi.mock('../stacks/main/resources')
 
 describe('stacks/main/index.ts', () => {
   let envOrig: string
   let mocks: MyMocks
-  let infra: typeof import('../stacks/main')
+  let infra: typeof import('../stacks/main/index.js')
 
   beforeEach(async () => {
     vi.resetModules()
@@ -42,7 +42,7 @@ describe('stacks/main/index.ts', () => {
       }
     })
 
-    infra = await import('../stacks/main')
+    infra = await import('../stacks/main/index.js')
 
     expect(resources.getLambdaRole).toHaveBeenCalledTimes(1)
     expect(resources.validateCertificate).toHaveBeenCalledTimes(0)
@@ -52,7 +52,7 @@ describe('stacks/main/index.ts', () => {
     expect(resources.buildInvalidator).toHaveBeenCalledTimes(1)
 
     const allowedOrigin = await promiseOf(
-      infra.allowedOrigins[0] as pulumi.Output<string>
+      infra.allowedOrigins[0] as pulumi.Output<string>,
     )
     const appUrl = await promiseOf(infra.appUrl as pulumi.Output<string>)
     expect(allowedOrigin).toMatch('https://example.com')
@@ -83,13 +83,13 @@ describe('stacks/main/index.ts', () => {
       }
     })
 
-    infra = await import('../stacks/main')
+    infra = await import('../stacks/main/index.js')
 
     expect(resources.validateCertificate).toHaveBeenCalledTimes(1)
     expect(resources.createAliasRecord).toHaveBeenCalledTimes(1)
 
     const distOrigin = await promiseOf(
-      infra.allowedOrigins[0] as pulumi.Output<string>
+      infra.allowedOrigins[0] as pulumi.Output<string>,
     )
     const fqdnOrigin = infra.allowedOrigins[1]
 

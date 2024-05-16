@@ -8,7 +8,7 @@ import { createRequire } from 'module'
 
 import yargs from 'yargs/yargs'
 
-import { AWSAdapterProps } from '../adapter'
+import { AWSAdapterProps } from '../adapter.js'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
@@ -52,7 +52,7 @@ export async function main(args: string[]): Promise<void> {
             describe: 'cancel ongoing stack updates',
             type: 'boolean',
           })
-      }
+      },
     )
     .alias('h', 'help')
     .help()
@@ -136,7 +136,7 @@ export async function main(args: string[]): Promise<void> {
           cwd: pulumiPath,
           stdio: [process.stdin, process.stdout, process.stderr],
           env: process.env,
-        }
+        },
       )
 
       if (comRes.status === null) {

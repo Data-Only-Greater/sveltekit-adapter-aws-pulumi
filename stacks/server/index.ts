@@ -1,7 +1,7 @@
 import * as pulumi from '@pulumi/pulumi'
 
-import { getLambdaRole, buildLambda } from './resources'
-import { getEnvironment } from '../utils'
+import { getLambdaRole, buildLambda } from './resources.js'
+import { getEnvironment } from '../utils.js'
 
 const pulumiConfig = new pulumi.Config()
 const projectPath = pulumiConfig.get('projectPath')
@@ -32,23 +32,23 @@ const serverURL = buildLambda(
   serverPath!,
   environment.parsed,
   memorySize,
-  serverInvokeMode
+  serverInvokeMode,
 )
 
 const optionsURL = buildLambda(
   'LambdaOptions',
   iamForLambda,
   optionsPath!,
-  optionsEnv
+  optionsEnv,
 )
 
 export const serverArn: pulumi.Output<string> = serverURL.functionArn
 export const serverDomain: pulumi.Output<string> = serverURL.functionUrl.apply(
-  (endpoint) => endpoint.split('://')[1].slice(0, -1)
+  (endpoint) => endpoint.split('://')[1].slice(0, -1),
 )
 
 export const optionsArn: pulumi.Output<string> = optionsURL.functionArn
 export const optionsDomain: pulumi.Output<string> =
   optionsURL.functionUrl.apply((endpoint) =>
-    endpoint.split('://')[1].slice(0, -1)
+    endpoint.split('://')[1].slice(0, -1),
   )
