@@ -31,17 +31,18 @@
     "adapter-stack-destroy": "./bin/destroy.js"
   },
   "scripts": {
-    "build": "npm run clean && tsc --project tsconfig.build.json && npm run copy-files",
+    "build": "npm run clean && tsc --project tsconfig.build.json && tsc --project stacks/tsconfig.json && npm run copy-files",
     "watch": "tsc -w --excludeFiles test",
     "format": "prettier --write .",
     "test": "vitest",
     "clean": "rimraf dist",
-    "copy-files": "copyfiles stacks/* stacks/**/* package.json README.md LICENSE dist",
+    "copy-files": "copyfiles package.json LICENSE README.md stacks/package.json stacks/*/Pulumi.yaml dist",
     "coverage": "vitest run --coverage"
   },
   "devDependencies": {
     "@types/folder-hash": "^4.0.4",
     "@types/lodash": "^4.17.1",
+    "@types/mime-types": "^2.1.4",
     "@types/minimist": "^1.2.5",
     "@types/node": "20.12.12",
     "@types/yargs": "^17.0.32",
@@ -59,7 +60,7 @@
     "dotenv": "^16.4.5",
     "folder-hash": "^4.0.4",
     "lodash": "^4.17.21",
-    "mime": "^4.0.3",
+    "mime-types": "^2.1.35",
     "sveltekit-adapter-aws-base": "^3.0.1",
     "yargs": "^17.7.2"
   },

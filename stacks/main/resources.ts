@@ -1,6 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import mime from 'mime'
+import * as mime from 'mime-types'
 
 import * as aws from '@pulumi/aws'
 import * as pulumi from '@pulumi/pulumi'
@@ -195,7 +195,7 @@ export function uploadStatic(dirPath: string, bucket: aws.s3.Bucket) {
       {
         key: posixFilePath,
         bucket: bucket.id,
-        contentType: mime.getType(filePath) || undefined,
+        contentType: mime.lookup(filePath) || undefined,
         source: new pulumi.asset.FileAsset(filePath),
       },
       {

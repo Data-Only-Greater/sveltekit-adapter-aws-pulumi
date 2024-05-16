@@ -58,7 +58,7 @@ export function adapter({
           builder,
           artifactPath,
           esbuildOptions,
-          serverStreaming
+          serverStreaming,
         )
 
       const options_directory = await buildOptions(builder, artifactPath)
@@ -74,16 +74,7 @@ export function adapter({
           stackName: stackName,
           workDir: serverPath,
         }
-        const serverStack = await LocalWorkspace.createOrSelectStack(
-          serverArgs,
-          {
-            envVars: {
-              TS_NODE_IGNORE: '^(?!.*(sveltekit-adapter-aws-pulumi)).*',
-              TS_NODE_TYPE_CHECK: '0',
-              PULUMI_NODEJS_TRANSPILE_ONLY: 'true',
-            },
-          }
-        )
+        const serverStack = await LocalWorkspace.createOrSelectStack(serverArgs)
 
         await serverStack.setAllConfig({
           'aws:region': { value: region },
@@ -112,7 +103,7 @@ export function adapter({
           prerendered_directory,
           serverStackUpResult.outputs.serverDomain.value,
           serverStackUpResult.outputs.optionsDomain.value,
-          artifactPath
+          artifactPath,
         )
 
         // Setup main stack.
@@ -121,13 +112,7 @@ export function adapter({
           stackName: stackName,
           workDir: mainPath,
         }
-        const mainStack = await LocalWorkspace.createOrSelectStack(mainArgs, {
-          envVars: {
-            TS_NODE_IGNORE: '^(?!.*(sveltekit-adapter-aws-pulumi)).*',
-            TS_NODE_TYPE_CHECK: '0',
-            PULUMI_NODEJS_TRANSPILE_ONLY: 'true',
-          },
-        })
+        const mainStack = await LocalWorkspace.createOrSelectStack(mainArgs)
 
         await mainStack.setAllConfig({
           'aws:region': { value: region },
@@ -161,7 +146,7 @@ export function adapter({
         await mainStack.refresh()
         const mainStackUpResult = await mainStack.up({ onOutput: console.info })
         const mainAllowedOrigins = JSON.stringify(
-          mainStackUpResult.outputs.allowedOrigins.value
+          mainStackUpResult.outputs.allowedOrigins.value,
         )
 
         // Call the server stack setting the allowed origins
@@ -177,7 +162,7 @@ export function adapter({
         adapterProps.stackName = stackName
         writeFileSync(
           join(artifactPath, '.adapterprops.json'),
-          JSON.stringify(adapterProps)
+          JSON.stringify(adapterProps),
         )
 
         builder.log.minor('Pulumi deployment done.')
