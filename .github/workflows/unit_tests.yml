@@ -18,7 +18,7 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Test
-        run: npm run test run --reporter verbose
+        run: npm run test -- run --reporter verbose
   coverage:
     needs: 'test'
     runs-on: ubuntu-latest
