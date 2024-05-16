@@ -7,7 +7,7 @@ on:
 jobs:
   release:
     name: Release (${{ github.event.workflow_run.head_commit.id }})
-    if: ${{ github.ref_name == 'main' && github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -20,15 +20,15 @@ jobs:
           node-version: 'lts/*'
           registry-url: 'https://registry.npmjs.org'
       - name: Install package dependencies
-        run: yarn install
+        run: npm install
       - name: Build package
-        run: yarn run build
+        run: npm run build
       - name: list files in dist
         run: |
           sudo apt-get install tree
           tree dist
       - name: Install semantic release
-        run: yarn add -D semantic-release @semantic-release/changelog @semantic-release/git conventional-changelog-conventionalcommits
+        run: npm install -D semantic-release @semantic-release/changelog @semantic-release/git conventional-changelog-conventionalcommits@7.0.2
       - name: Semantic Release
         run: npx semantic-release --debug
         env:
