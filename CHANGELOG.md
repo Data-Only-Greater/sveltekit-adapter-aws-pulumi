@@ -1,3 +1,10 @@
+## [3.0.2](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v3.0.1...v3.0.2) (2024-05-16)
+
+
+### Bug Fixes
+
+* precompile stacks to commonjs ([#7](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/issues/7)) ([bbc9f58](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/bbc9f58c50cd97479e170d6c1ce1a342a2f07df6))
+
 ## [3.0.1](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v3.0.0...v3.0.1) (2024-05-16)
 
 
