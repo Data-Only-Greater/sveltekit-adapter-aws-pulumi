@@ -3,15 +3,15 @@ import * as path from 'path'
 
 import * as pulumi from '@pulumi/pulumi'
 
-import { MyMocks, getTempDir, promiseOf } from './utils'
-import * as resources from '../stacks/server/resources'
+import { MyMocks, getTempDir, promiseOf } from './utils.js'
+import * as resources from '../stacks/server/resources.js'
 
 vi.mock('../stacks/server/resources')
 
 describe('stacks/server/index.ts', () => {
   let envOrig: string
   let mocks: MyMocks
-  let infra: typeof import('../stacks/server')
+  let infra: typeof import('../stacks/server/index.js')
 
   beforeEach(async () => {
     vi.resetModules()
@@ -60,7 +60,7 @@ describe('stacks/server/index.ts', () => {
       }
     })
 
-    infra = await import('../stacks/server')
+    infra = await import('../stacks/server/index.js')
 
     expect(resources.getLambdaRole).toHaveBeenCalledTimes(1)
     expect(resources.buildLambda).toHaveBeenCalledTimes(2)
@@ -115,7 +115,7 @@ describe('stacks/server/index.ts', () => {
       }
     })
 
-    infra = await import('../stacks/server')
+    infra = await import('../stacks/server/index.js')
 
     expect(mockBuildLambda.mock.calls[1][3]).toStrictEqual({})
 

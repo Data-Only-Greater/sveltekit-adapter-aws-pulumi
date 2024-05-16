@@ -4,17 +4,17 @@ import * as path from 'path'
 import * as pulumi from '@pulumi/pulumi'
 import * as aws from '@pulumi/aws'
 
-import { MyMocks, promiseOf, findResource, getTempDir } from './utils'
+import { MyMocks, promiseOf, findResource, getTempDir } from './utils.js'
 
 describe('stacks/main/resources.ts', () => {
-  let infra: typeof import('../stacks/main/resources')
+  let infra: typeof import('../stacks/main/resources.js')
   let mocks: MyMocks
 
   beforeEach(async () => {
     vi.resetModules()
     mocks = new MyMocks()
     pulumi.runtime.setMocks(mocks)
-    infra = await import('../stacks/main/resources')
+    infra = await import('../stacks/main/resources.js')
   })
 
   it('getLambdaRole', async () => {
@@ -35,7 +35,7 @@ describe('stacks/main/resources.ts', () => {
     const FQDN = 'server.example.com'
     const domainName = 'another.com'
     expect(() => infra.validateCertificate(FQDN, domainName)).toThrowError(
-      'FQDN must contain domainName'
+      'FQDN must contain domainName',
     )
   })
 
@@ -45,21 +45,21 @@ describe('stacks/main/resources.ts', () => {
     const domainName = 'example.com'
 
     const certificateArn = await promiseOf(
-      infra.validateCertificate(FQDN, domainName)
+      infra.validateCertificate(FQDN, domainName),
     )
     const certificateValidation = findResource(
       mocks,
-      'aws:acm/certificateValidation:CertificateValidation'
+      'aws:acm/certificateValidation:CertificateValidation',
     )
 
     expect(certificateValidation!.certificateArn).toMatch(certificateArn)
     expect(certificateValidation!.validationRecordFqdns[0]).toMatch(
-      'server.example.com'
+      'server.example.com',
     )
 
     const validationRecord = findResource(mocks, 'aws:route53/record:Record')
     const certificateMatch = validationRecord!.name.match(
-      '(.*?)-resourceRecordName'
+      '(.*?)-resourceRecordName',
     )
     const certificateName = certificateMatch![1]
 
@@ -72,10 +72,10 @@ describe('stacks/main/resources.ts', () => {
     expect(certificate.validationMethod).toMatch('DNS')
 
     expect(validationRecord!.name).toMatch(
-      certificate.domainValidationOptions[0].resourceRecordName
+      certificate.domainValidationOptions[0].resourceRecordName,
     )
     expect(validationRecord!.records[0]).toMatch(
-      certificate.domainValidationOptions[0].resourceRecordValue
+      certificate.domainValidationOptions[0].resourceRecordValue,
     )
     expect(validationRecord!.ttl).toEqual(60)
     expect(validationRecord!.zoneId).toMatch(`${FQDN}.validation-zone`)
@@ -147,7 +147,7 @@ describe('stacks/main/resources.ts', () => {
       bucket,
       serverHeaders,
       FQDN,
-      certificateArn
+      certificateArn,
     )
 
     const distOrigins = await promiseOf(distribution.origins)
@@ -172,7 +172,7 @@ describe('stacks/main/resources.ts', () => {
     const oac = mocks.resources[oacName]
 
     expect(oac.type).toMatch(
-      'aws:cloudfront/originAccessControl:OriginAccessControl'
+      'aws:cloudfront/originAccessControl:OriginAccessControl',
     )
     expect(oac.originAccessControlOriginType).toMatch('s3')
     expect(oac.signingBehavior).toMatch('no-override')
@@ -181,13 +181,13 @@ describe('stacks/main/resources.ts', () => {
     const distAliases = await promiseOf(distribution.aliases)
     const distEnabled = await promiseOf(distribution.enabled)
     const distViewerCertificate = await promiseOf(
-      distribution.viewerCertificate
+      distribution.viewerCertificate,
     )
     const distDefaultCacheBehavior = await promiseOf(
-      distribution.defaultCacheBehavior
+      distribution.defaultCacheBehavior,
     )
     const distOrderedCacheBehaviors = await promiseOf(
-      distribution.orderedCacheBehaviors
+      distribution.orderedCacheBehaviors,
     )
     const distArn = await promiseOf(distribution.arn)
 
@@ -211,10 +211,10 @@ describe('stacks/main/resources.ts', () => {
     ])
     expect(distDefaultCacheBehavior.compress).toBe(true)
     expect(distDefaultCacheBehavior.viewerProtocolPolicy).toMatch(
-      'redirect-to-https'
+      'redirect-to-https',
     )
     expect(distDefaultCacheBehavior.cachePolicyId).toMatch(
-      'aws:cloudfront/getCachePolicy:getCachePolicy-id'
+      'aws:cloudfront/getCachePolicy:getCachePolicy-id',
     )
 
     const originRequestPolicyMatch =
@@ -223,17 +223,17 @@ describe('stacks/main/resources.ts', () => {
     const originRequestPolicy = mocks.resources[originRequestPolicyName]
 
     expect(originRequestPolicy.type).toMatch(
-      'aws:cloudfront/originRequestPolicy:OriginRequestPolicy'
+      'aws:cloudfront/originRequestPolicy:OriginRequestPolicy',
     )
     expect(originRequestPolicy.cookiesConfig.cookieBehavior).toMatch('all')
     expect(originRequestPolicy.headersConfig.headerBehavior).toMatch(
-      'whitelist'
+      'whitelist',
     )
     expect(originRequestPolicy.headersConfig.headers.items).toEqual(
-      serverHeaders
+      serverHeaders,
     )
     expect(originRequestPolicy.queryStringsConfig.queryStringBehavior).toMatch(
-      'all'
+      'all',
     )
 
     // Need to wait for the mocks to update
@@ -283,7 +283,7 @@ describe('stacks/main/resources.ts', () => {
 
     const distAliases = await promiseOf(distribution.aliases)
     const distViewerCertificate = await promiseOf(
-      distribution.viewerCertificate
+      distribution.viewerCertificate,
     )
 
     expect(distAliases).toBeUndefined()
@@ -302,7 +302,7 @@ describe('stacks/main/resources.ts', () => {
 
     const record = infra.createAliasRecord(
       targetDomain,
-      <aws.cloudfront.Distribution>distribution
+      <aws.cloudfront.Distribution>distribution,
     )
     const recordName = await promiseOf(record.name)
     const recordZoneId = await promiseOf(record.zoneId)

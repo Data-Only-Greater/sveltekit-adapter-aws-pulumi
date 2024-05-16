@@ -1,16 +1,16 @@
 import * as fs from 'fs'
 import * as path from 'path'
 
-import { getTempDir } from './utils'
+import { getTempDir } from './utils.js'
 
 describe('stacks/utils.ts', () => {
   let envOrig: string
-  let utils: typeof import('../stacks/utils')
+  let utils: typeof import('../stacks/utils.js')
 
   beforeEach(async () => {
     vi.resetModules()
     envOrig = JSON.stringify(process.env)
-    utils = await import('../stacks/utils')
+    utils = await import('../stacks/utils.js')
   })
 
   afterEach(() => {

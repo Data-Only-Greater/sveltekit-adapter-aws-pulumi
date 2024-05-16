@@ -1,8 +1,7 @@
 import * as aws from '@pulumi/aws'
 import * as pulumi from '@pulumi/pulumi'
-import { DotenvConfigOutput } from 'dotenv'
 
-import { NameRegister } from '../utils'
+import { NameRegister } from '../utils.js'
 
 const nameRegister = NameRegister.getInstance()
 let registerName = (name: string): string => {
@@ -34,7 +33,7 @@ export function getLambdaRole(): aws.iam.Role {
     {
       role: iamForLambda.name,
       policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole,
-    }
+    },
   )
 
   return iamForLambda
@@ -46,7 +45,7 @@ export function buildLambda(
   codePath: string,
   environment: object = {},
   memorySize: number = 128,
-  invokeMode: string = 'BUFFERED'
+  invokeMode: string = 'BUFFERED',
 ): aws.lambda.FunctionUrl {
   const lambdaHandler = new aws.lambda.Function(registerName(name), {
     code: new pulumi.asset.FileArchive(codePath),

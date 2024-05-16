@@ -31,7 +31,7 @@
     "adapter-stack-destroy": "./bin/destroy.js"
   },
   "scripts": {
-    "build": "yarn clean && tsc --project tsconfig.build.json && yarn copy-files",
+    "build": "npm run clean && tsc --project tsconfig.build.json && npm run copy-files",
     "watch": "tsc -w --excludeFiles test",
     "format": "prettier --write .",
     "test": "vitest",
@@ -40,46 +40,41 @@
     "coverage": "vitest run --coverage"
   },
   "devDependencies": {
-    "@types/folder-hash": "^4.0.2",
-    "@types/lodash": "^4.14.191",
-    "@types/mime": "^3.0.1",
-    "@types/minimist": "^1.2.2",
-    "@types/node": "18.16.3",
-    "@types/yargs": "^17.0.24",
-    "@vitest/coverage-c8": "^0.31.0",
+    "@types/folder-hash": "^4.0.4",
+    "@types/lodash": "^4.17.1",
+    "@types/minimist": "^1.2.5",
+    "@types/node": "20.12.12",
+    "@types/yargs": "^17.0.32",
     "copyfiles": "^2.4.1",
-    "prettier": "^2.8.8",
-    "rimraf": "^5.0.0",
-    "typescript": "^5.0.4",
-    "vitest": "^0.31.0"
+    "prettier": "^3.2.5",
+    "rimraf": "^5.0.7",
+    "typescript": "^5.4.5",
+    "vitest": "^1.6.0"
   },
   "dependencies": {
-    "@pulumi/aws": "^5.39.0",
-    "@pulumi/command": "^0.7.1",
-    "@pulumi/pulumi": "^3.66.0",
-    "dotenv": "^16.0.3",
+    "@pulumi/aws": "^6.36.0",
+    "@pulumi/command": "^0.10.0",
+    "@pulumi/pulumi": "^3.116.1",
+    "@vitest/coverage-v8": "^1.6.0",
+    "dotenv": "^16.4.5",
     "folder-hash": "^4.0.4",
     "lodash": "^4.17.21",
-    "sveltekit-adapter-aws-base": "^2.2.2",
+    "mime": "^4.0.3",
+    "sveltekit-adapter-aws-base": "^3.0.1",
     "yargs": "^17.7.2"
   },
   "peerDependencies": {
-    "@sveltejs/kit": "^1.15.2"
+    "@sveltejs/kit": "^2.5.8"
   },
-  "resolutions": {
-    "vitest/**/vite": "~4.2.0"
+  "engines": {
+    "node": ">=18.13"
   },
   "release": {
     "branches": [
       "main"
     ],
     "plugins": [
-      [
-        "@semantic-release/commit-analyzer",
-        {
-          "preset": "conventionalcommits"
-        }
-      ],
+      "@semantic-release/commit-analyzer",
       "@semantic-release/release-notes-generator",
       [
         "@semantic-release/changelog",
@@ -103,6 +98,7 @@
           "message": "chore(release): set `package.json` to ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
         }
       ]
-    ]
+    ],
+    "preset": "conventionalcommits"
   }
 }

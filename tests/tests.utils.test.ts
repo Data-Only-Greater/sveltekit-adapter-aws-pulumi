@@ -1,9 +1,9 @@
 describe('tests/utils.ts', () => {
-  let utils: typeof import('./utils')
+  let utils: typeof import('./utils.js')
 
   beforeEach(async () => {
     vi.resetModules()
-    utils = await import('./utils')
+    utils = await import('./utils.js')
   })
 
   it.each([

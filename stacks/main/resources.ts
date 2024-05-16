@@ -1,12 +1,12 @@
 import * as fs from 'fs'
-import * as mime from 'mime'
 import * as path from 'path'
+import mime from 'mime'
 
 import * as aws from '@pulumi/aws'
 import * as pulumi from '@pulumi/pulumi'
 import { local } from '@pulumi/command'
 
-import { NameRegister } from '../utils'
+import { NameRegister } from '../utils.js'
 
 const nameRegister = NameRegister.getInstance()
 let registerName = (name: string): string => {
@@ -25,12 +25,12 @@ export function getLambdaRole(functionArns?: string[]): aws.iam.Role {
           {
             type: string
             identifiers: string[]
-          }
+          },
         ]
         actions: string[]
         effect: string
         resources?: string[]
-      }
+      },
     ]
   }
 
@@ -59,7 +59,7 @@ export function getLambdaRole(functionArns?: string[]): aws.iam.Role {
     {
       role: iamForLambda.name,
       policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole,
-    }
+    },
   )
 
   if (functionArns) {
@@ -90,7 +90,7 @@ export function getLambdaRole(functionArns?: string[]): aws.iam.Role {
 
 export function buildRouter(
   iamForLambda: aws.iam.Role,
-  routerPath: string
+  routerPath: string,
 ): aws.lambda.Function {
   const routerHandler = new aws.lambda.Function(
     registerName('LambdaRouterFunctionHandler'),
@@ -102,7 +102,7 @@ export function buildRouter(
       memorySize: 128,
       publish: true,
     },
-    { provider: eastRegion }
+    { provider: eastRegion },
   )
 
   return routerHandler
@@ -110,7 +110,7 @@ export function buildRouter(
 
 export function validateCertificate(
   FQDN: string,
-  domainName: string
+  domainName: string,
 ): pulumi.Output<string> {
   if (!FQDN.includes(domainName)) {
     throw new Error('FQDN must contain domainName')
@@ -122,7 +122,7 @@ export function validateCertificate(
       domainName: FQDN,
       validationMethod: 'DNS',
     },
-    { provider: eastRegion }
+    { provider: eastRegion },
   )
 
   const hostedZone = aws.route53.getZone({
@@ -138,7 +138,7 @@ export function validateCertificate(
       ttl: 60,
       type: certificate.domainValidationOptions[0].resourceRecordType,
       zoneId: hostedZone.then((x) => x.zoneId),
-    }
+    },
   )
 
   const certificateValidation = new aws.acm.CertificateValidation(
@@ -147,7 +147,7 @@ export function validateCertificate(
       certificateArn: certificate.arn,
       validationRecordFqdns: [validationRecord.fqdn],
     },
-    { provider: eastRegion }
+    { provider: eastRegion },
   )
 
   return certificateValidation.certificateArn
@@ -155,7 +155,7 @@ export function validateCertificate(
 
 export function buildStatic(
   staticPath: string,
-  prerenderedPath: string
+  prerenderedPath: string,
 ): aws.s3.Bucket {
   const bucket = new aws.s3.Bucket(registerName('StaticContentBucket'), {
     acl: 'private',
@@ -200,7 +200,7 @@ export function uploadStatic(dirPath: string, bucket: aws.s3.Bucket) {
       },
       {
         parent: bucket,
-      }
+      },
     )
   })
 }
@@ -210,7 +210,7 @@ export function buildCDN(
   bucket: aws.s3.Bucket,
   serverHeaders: string[],
   FQDN?: string,
-  certificateArn?: pulumi.Input<string>
+  certificateArn?: pulumi.Input<string>,
 ): aws.cloudfront.Distribution {
   const defaultRequestPolicy = new aws.cloudfront.OriginRequestPolicy(
     registerName('DefaultRequestPolicy'),
@@ -227,7 +227,7 @@ export function buildCDN(
       queryStringsConfig: {
         queryStringBehavior: 'all',
       },
-    }
+    },
   )
 
   const oac = new aws.cloudfront.OriginAccessControl(
@@ -238,7 +238,7 @@ export function buildCDN(
       originAccessControlOriginType: 's3',
       signingBehavior: 'no-override',
       signingProtocol: 'sigv4',
-    }
+    },
   )
 
   const optimizedCachePolicy = aws.cloudfront.getCachePolicyOutput({
@@ -300,7 +300,7 @@ export function buildCDN(
           restrictionType: 'none',
         },
       },
-    }
+    },
   )
 
   const cloudFrontPolicyDocument = aws.iam.getPolicyDocumentOutput({
@@ -348,7 +348,7 @@ export function buildCDN(
     {
       bucket: bucket.id,
       policy: cloudFrontPolicyDocument.apply((policy) => policy.json),
-    }
+    },
   )
 
   return distribution
@@ -358,7 +358,7 @@ export function buildCDN(
 // distribution.
 export function createAliasRecord(
   targetDomain: string,
-  distribution: aws.cloudfront.Distribution
+  distribution: aws.cloudfront.Distribution,
 ): aws.route53.Record {
   const domainParts = exports.getDomainAndSubdomain(targetDomain)
   const hostedZoneId = aws.route53
@@ -404,7 +404,7 @@ export function getDomainAndSubdomain(domain: string): {
 export function buildInvalidator(
   distribution: aws.cloudfront.Distribution,
   staticPath: string,
-  prerenderedPath: string
+  prerenderedPath: string,
 ) {
   interface PathHashResourceInputs {
     path: pulumi.Input<string>
@@ -427,7 +427,7 @@ export function buildInvalidator(
     async diff(
       id: string,
       previousOutput: PathHashOutputs,
-      news: PathHashInputs
+      news: PathHashInputs,
     ): Promise<pulumi.dynamic.DiffResult> {
       const replaces: string[] = []
       let changes = true
@@ -458,7 +458,7 @@ export function buildInvalidator(
     constructor(
       name: string,
       args: PathHashResourceInputs,
-      opts?: pulumi.CustomResourceOptions
+      opts?: pulumi.CustomResourceOptions,
     ) {
       super(pathHashProvider, name, { hash: undefined, ...args }, opts)
     }
@@ -480,6 +480,6 @@ export function buildInvalidator(
     },
     {
       dependsOn: [distribution],
-    }
+    },
   )
 }
