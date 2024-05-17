@@ -14,6 +14,18 @@ describe('stacks/main/resources.ts', () => {
     vi.resetModules()
     mocks = new MyMocks()
     pulumi.runtime.setMocks(mocks)
+
+    // @ts-ignore
+    pulumi.Config = vi.fn(() => {
+      return {
+        require: vi.fn((x) => {
+          if (x === 'aws:region') {
+            return '{"aws:region": "mock"}'
+          }
+        }),
+      }
+    })
+
     infra = await import('../stacks/main/resources.js')
   })
 
