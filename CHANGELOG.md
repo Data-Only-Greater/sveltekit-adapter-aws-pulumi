@@ -1,3 +1,10 @@
+## [3.1.2](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v3.1.1...v3.1.2) (2024-05-17)
+
+
+### Bug Fixes
+
+* remove map files from stack distributions ([3ad0ac8](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/3ad0ac8805ccfe4756d7eb0e075104d2c5e47452))
+
 ## [3.1.1](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v3.1.0...v3.1.1) (2024-05-17)
 
 
