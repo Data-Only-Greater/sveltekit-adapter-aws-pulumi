@@ -15,6 +15,7 @@ Pulumi.
 
 ### Setup
 
+1. Ensure that the [Pulumi CLI](https://www.pulumi.com/docs/install/) is installed.
 1. Create a SvelteKit project "my-app" - `npm create svelte@latest my-app`
 1. `cd my-app`
 1. `npm install`
