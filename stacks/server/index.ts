@@ -4,14 +4,14 @@ import { getLambdaRole, buildLambda } from './resources.js'
 import { getEnvironment } from '../utils.js'
 
 const pulumiConfig = new pulumi.Config()
-const projectPath = pulumiConfig.get('projectPath')
-const serverPath = pulumiConfig.get('serverPath')
-const optionsPath = pulumiConfig.get('optionsPath')
-const memorySizeStr = pulumiConfig.get('memorySize')
+const projectPath = pulumiConfig.require('projectPath')
+const serverPath = pulumiConfig.require('serverPath')
+const optionsPath = pulumiConfig.require('optionsPath')
+const memorySizeStr = pulumiConfig.require('memorySize')
 const allowedOriginsStr = pulumiConfig.get('allowedOrigins')
 let serverInvokeMode = pulumiConfig.get('serverInvokeMode')
 
-const memorySize = Number(memorySizeStr!)
+const memorySize = Number(memorySizeStr)
 
 let optionsEnv: any = {}
 
@@ -24,12 +24,12 @@ if (!serverInvokeMode) {
 }
 
 const iamForLambda = getLambdaRole()
-const environment = getEnvironment(projectPath!)
+const environment = getEnvironment(projectPath)
 
 const serverURL = buildLambda(
   'LambdaServer',
   iamForLambda,
-  serverPath!,
+  serverPath,
   environment.parsed,
   memorySize,
   serverInvokeMode,
@@ -38,7 +38,7 @@ const serverURL = buildLambda(
 const optionsURL = buildLambda(
   'LambdaOptions',
   iamForLambda,
-  optionsPath!,
+  optionsPath,
   optionsEnv,
 )
 

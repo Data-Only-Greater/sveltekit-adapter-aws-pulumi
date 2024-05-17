@@ -46,11 +46,14 @@ describe('stacks/server/index.ts', () => {
     pulumi.Config = vi.fn(() => {
       return {
         get: vi.fn((x) => {
-          if (x === 'projectPath') {
-            return tmpDir
-          }
           if (x === 'allowedOrigins') {
             return '[example.com]'
+          }
+          return ''
+        }),
+        require: vi.fn((x) => {
+          if (x === 'projectPath') {
+            return tmpDir
           }
           if (x === 'memorySize') {
             return '256'
@@ -107,6 +110,9 @@ describe('stacks/server/index.ts', () => {
     pulumi.Config = vi.fn(() => {
       return {
         get: vi.fn((x) => {
+          return ''
+        }),
+        require: vi.fn((x) => {
           if (x === 'projectPath') {
             return tmpDir
           }

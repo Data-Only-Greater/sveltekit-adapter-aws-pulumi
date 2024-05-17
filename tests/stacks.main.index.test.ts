@@ -22,18 +22,24 @@ describe('stacks/main/index.ts', () => {
   })
 
   it('Without FQDN', async () => {
+    let applyMethod: any
     ;(resources.buildRouter as any).mockImplementation(() => {
       return 'mock'
     })
     ;(resources.buildCDN as any).mockImplementation(() => {
       return {
         domainName: 'example.com',
+        id: { apply: (x: any) => (applyMethod = x) },
       }
     })
     // @ts-ignore
     pulumi.Config = vi.fn(() => {
       return {
         get: vi.fn((x) => {
+          return ''
+        }),
+        require: vi.fn((x) => {
+          console.log(x)
           if (x === 'serverHeaders') {
             return '{"mock": "mock"}'
           }
@@ -49,7 +55,7 @@ describe('stacks/main/index.ts', () => {
     expect(resources.buildStatic).toHaveBeenCalledTimes(1)
     expect(resources.buildCDN).toHaveBeenCalledTimes(1)
     expect(resources.createAliasRecord).toHaveBeenCalledTimes(0)
-    expect(resources.buildInvalidator).toHaveBeenCalledTimes(1)
+    expect(applyMethod).toBeTypeOf('function')
 
     const allowedOrigin = await promiseOf(
       infra.allowedOrigins[0] as pulumi.Output<string>,
@@ -67,16 +73,21 @@ describe('stacks/main/index.ts', () => {
     ;(resources.buildCDN as any).mockImplementation(() => {
       return {
         domainName: 'example.com',
+        id: { apply: (x: any) => null },
       }
     })
     // @ts-ignore
     pulumi.Config = vi.fn(() => {
       return {
         get: vi.fn((x) => {
+          if (x === 'FQDN') {
+            return fqdn
+          }
+          return ''
+        }),
+        require: vi.fn((x) => {
           if (x === 'serverHeaders') {
             return '{"mock": "mock"}'
-          } else if (x === 'FQDN') {
-            return fqdn
           }
           return ''
         }),

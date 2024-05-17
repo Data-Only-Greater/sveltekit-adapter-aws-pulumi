@@ -2,11 +2,13 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as mime from 'mime-types'
 
+import * as cloudfront from '@aws-sdk/client-cloudfront'
 import * as aws from '@pulumi/aws'
 import * as pulumi from '@pulumi/pulumi'
-import { local } from '@pulumi/command'
 
 import { NameRegister } from '../utils.js'
+
+const pulumiConfig = new pulumi.Config('aws')
 
 const nameRegister = NameRegister.getInstance()
 let registerName = (name: string): string => {
@@ -401,85 +403,40 @@ export function getDomainAndSubdomain(domain: string): {
   }
 }
 
-export function buildInvalidator(
-  distribution: aws.cloudfront.Distribution,
-  staticPath: string,
-  prerenderedPath: string,
-) {
-  interface PathHashResourceInputs {
-    path: pulumi.Input<string>
+// Source: https://www.pulumi.com/blog/next-level-iac-pulumi-runtime-logic/
+export function createInvalidation(id: string) {
+  // Only invalidate after a deployment.
+  if (pulumi.runtime.isDryRun()) {
+    console.log('This is a Pulumi preview, so skipping cache invalidation.')
+    return
   }
 
-  interface PathHashInputs {
-    path: string
-  }
+  const region = pulumiConfig.require('region')
 
-  interface PathHashOutputs {
-    hash: string
-  }
+  process.on('beforeExit', () => {
+    const client = new cloudfront.CloudFrontClient({ region })
+    const command = new cloudfront.CreateInvalidationCommand({
+      DistributionId: id,
+      InvalidationBatch: {
+        CallerReference: `invalidation-${Date.now()}`,
+        Paths: {
+          Quantity: 1,
+          Items: ['/*'],
+        },
+      },
+    })
 
-  const pathHashProvider: pulumi.dynamic.ResourceProvider = {
-    async create(inputs: PathHashInputs) {
-      const folderHash = await import('folder-hash')
-      const pathHash = await folderHash.hashElement(inputs.path)
-      return { id: inputs.path, outs: { hash: pathHash.toString() } }
-    },
-    async diff(
-      id: string,
-      previousOutput: PathHashOutputs,
-      news: PathHashInputs,
-    ): Promise<pulumi.dynamic.DiffResult> {
-      const replaces: string[] = []
-      let changes = true
-
-      const oldHash = previousOutput.hash
-      const folderHash = await import('folder-hash')
-      const newHash = await folderHash.hashElement(news.path)
-
-      if (oldHash === newHash.toString()) {
-        changes = false
-      }
-
-      return {
-        deleteBeforeReplace: false,
-        replaces: replaces,
-        changes: changes,
-      }
-    },
-    async update(id, olds: PathHashInputs, news: PathHashInputs) {
-      const folderHash = await import('folder-hash')
-      const pathHash = await folderHash.hashElement(news.path)
-      return { outs: { hash: pathHash.toString() } }
-    },
-  }
-
-  class PathHash extends pulumi.dynamic.Resource {
-    public readonly hash!: pulumi.Output<string>
-    constructor(
-      name: string,
-      args: PathHashResourceInputs,
-      opts?: pulumi.CustomResourceOptions,
-    ) {
-      super(pathHashProvider, name, { hash: undefined, ...args }, opts)
-    }
-  }
-
-  let staticHash = new PathHash(registerName('StaticHash'), {
-    path: staticPath,
+    client
+      .send(command)
+      .then((result) => {
+        console.log(
+          `Invalidation status for ${id}: ${result.Invalidation?.Status}.`,
+        )
+        process.exit(0)
+      })
+      .catch((error) => {
+        console.error(error)
+        process.exit(1)
+      })
   })
-
-  let prerenderedHash = new PathHash(registerName('PrerenderedHash'), {
-    path: prerenderedPath!,
-  })
-
-  const invalidationCommand = new local.Command(
-    registerName('Invalidate'),
-    {
-      create: pulumi.interpolate`aws cloudfront create-invalidation --distribution-id ${distribution.id} --paths /\*`,
-      triggers: [staticHash.hash, prerenderedHash.hash],
-    },
-    {
-      dependsOn: [distribution],
-    },
-  )
 }
