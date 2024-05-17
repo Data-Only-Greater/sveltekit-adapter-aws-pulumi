@@ -1,3 +1,10 @@
+## [3.1.1](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v3.1.0...v3.1.1) (2024-05-17)
+
+
+### Bug Fixes
+
+* remove redundant dependencies ([78a45d2](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/78a45d245e6f31b63c0132765232decbfc388c41))
+
 ## [3.1.0](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v3.0.2...v3.1.0) (2024-05-17)
 
 
