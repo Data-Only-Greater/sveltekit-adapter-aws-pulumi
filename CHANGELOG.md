@@ -1,3 +1,10 @@
+## [3.1.0](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v3.0.2...v3.1.0) (2024-05-17)
+
+
+### Features
+
+* Use AWS SDK to invalidate using pulumi beforeExit hook ([#8](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/issues/8)) ([fbe6e5b](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/fbe6e5bcf09a233796497b990f03fe8fa45c4dd6))
+
 ## [3.0.2](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v3.0.1...v3.0.2) (2024-05-16)
 
 
