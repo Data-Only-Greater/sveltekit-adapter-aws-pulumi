@@ -110,6 +110,9 @@ Values can be added to the `.env` file or defined as environment
 variables. If environment variables are defined they will overwrite the values
 in the .env file.
 
+See [$env/static/private](https://kit.svelte.dev/docs/modules#$env-static-private)
+in the SvelteKit documentation for further details.
+
 ## Destroy Command
 
 A script is provided to destroy the infrastructure, with the following

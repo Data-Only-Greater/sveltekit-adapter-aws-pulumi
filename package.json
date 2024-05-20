@@ -41,7 +41,6 @@
   },
   "devDependencies": {
     "@types/folder-hash": "^4.0.4",
-    "@types/lodash": "^4.17.1",
     "@types/mime-types": "^2.1.4",
     "@types/minimist": "^1.2.5",
     "@types/node": "20.12.12",
@@ -57,8 +56,6 @@
     "@aws-sdk/client-cloudfront": "^3.577.0",
     "@pulumi/aws": "^6.36.0",
     "@pulumi/pulumi": "^3.116.1",
-    "dotenv": "^16.4.5",
-    "lodash": "^4.17.21",
     "mime-types": "^2.1.35",
     "sveltekit-adapter-aws-base": "^3.0.1",
     "yargs": "^17.7.2"
