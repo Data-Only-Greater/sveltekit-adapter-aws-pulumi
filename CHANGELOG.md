@@ -1,3 +1,10 @@
+## [3.2.0](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v3.1.2...v3.2.0) (2024-05-20)
+
+
+### Features
+
+* use Vite for env variable loading ([#9](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/issues/9)) ([2aa0f5c](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/2aa0f5c2f01cd68bdfd4111bee66a196fffd4350))
+
 ## [3.1.2](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v3.1.1...v3.1.2) (2024-05-17)
 
 
