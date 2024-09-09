@@ -77,7 +77,6 @@ export function adapter({
 
         await serverStack.setAllConfig({
           'aws:region': { value: region },
-          cachePolicy: { value: `Managed-${cachePolicy}` },
           projectPath: { value: process.cwd() },
           serverPath: { value: server_directory },
           optionsPath: { value: options_directory },
@@ -116,6 +115,7 @@ export function adapter({
 
         await mainStack.setAllConfig({
           'aws:region': { value: region },
+          cachePolicy: { value: `Managed-${cachePolicy}` },
           edgePath: { value: edge_directory },
           staticPath: { value: static_directory },
           prerenderedPath: { value: prerendered_directory },
