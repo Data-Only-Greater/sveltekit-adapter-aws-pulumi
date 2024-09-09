@@ -11,13 +11,14 @@ import {
 } from './resources.js'
 
 const pulumiConfig = new pulumi.Config()
+const cachePolicy = pulumiConfig.require('cachePolicy')
 const edgePath = pulumiConfig.require('edgePath')
-const staticPath = pulumiConfig.require('staticPath')
+const FQDN = pulumiConfig.get('FQDN')
+const optionsArn = pulumiConfig.require('optionsArn')
 const prerenderedPath = pulumiConfig.require('prerenderedPath')
 const serverArn = pulumiConfig.require('serverArn')
-const optionsArn = pulumiConfig.require('optionsArn')
-const FQDN = pulumiConfig.get('FQDN')
 const serverHeadersStr = pulumiConfig.get('serverHeaders')
+const staticPath = pulumiConfig.require('staticPath')
 
 let serverHeaders: string[] = []
 
@@ -41,6 +42,7 @@ const distribution = buildCDN(
   routerHandler,
   bucket,
   serverHeaders,
+  cachePolicy,
   FQDN,
   certificateArn,
 )

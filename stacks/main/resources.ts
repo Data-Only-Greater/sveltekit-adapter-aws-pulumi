@@ -211,6 +211,7 @@ export function buildCDN(
   routerFunction: aws.lambda.Function,
   bucket: aws.s3.Bucket,
   serverHeaders: string[],
+  cachePolicy: string,
   FQDN?: string,
   certificateArn?: pulumi.Input<string>,
 ): aws.cloudfront.Distribution {
@@ -244,7 +245,7 @@ export function buildCDN(
   )
 
   const optimizedCachePolicy = aws.cloudfront.getCachePolicyOutput({
-    name: 'Managed-CachingOptimized',
+    name: cachePolicy,
   })
 
   const distribution = new aws.cloudfront.Distribution(
