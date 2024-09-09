@@ -1,3 +1,9 @@
+## [3.3.1](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v3.3.0...v3.3.1) (2024-09-09)
+
+### Bug Fixes
+
+* apply Managed- part of cache policy automatically ([ed4f24a](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/ed4f24a02804906bd4f2aa1f8437b9cd20b4a7e5))
+
 ## [3.3.0](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v3.2.0...v3.3.0) (2024-09-09)
 
 ### Features
