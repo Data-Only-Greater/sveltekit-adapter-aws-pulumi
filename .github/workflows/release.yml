@@ -28,7 +28,7 @@ jobs:
           sudo apt-get install tree
           tree dist
       - name: Install semantic release
-        run: npm install -D semantic-release @semantic-release/changelog @semantic-release/git conventional-changelog-conventionalcommits@7.0.2
+        run: npm install -D semantic-release @semantic-release/changelog @semantic-release/git conventional-changelog-conventionalcommits@">=8.0.0"
       - name: Semantic Release
         run: npx semantic-release --debug
         env:
