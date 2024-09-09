@@ -1,3 +1,13 @@
+## [3.3.0](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v3.2.0...v3.3.0) (2024-09-09)
+
+### Features
+
+* Add option to set Cloudfront managed cache policy ([#10](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/issues/10)) ([792ac06](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/792ac06c733027215f465e08230918bd44332dd6))
+
+### Bug Fixes
+
+* semantic release bug workaround ([98f3e8f](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/98f3e8f4df849a0849a4a3fcb104fc9ab8d93f75))
+
 ## [3.2.0](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v3.1.2...v3.2.0) (2024-05-20)
 
 
