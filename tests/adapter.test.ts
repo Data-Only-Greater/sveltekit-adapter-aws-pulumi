@@ -93,6 +93,7 @@ describe('adapter.ts', () => {
     const awsAdapter = adapter.adapter({
       artifactPath: tmpDir,
       autoDeploy: true,
+      stackName: 'mock',
     })
     await awsAdapter.adapt(builder)
 

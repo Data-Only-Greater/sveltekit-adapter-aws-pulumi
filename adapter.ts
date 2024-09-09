@@ -32,7 +32,7 @@ export interface AWSAdapterProps {
 export function adapter({
   artifactPath = 'build',
   autoDeploy = false,
-  cachePolicy = 'Managed-CachingOptimized',
+  cachePolicy = 'CachingOptimized',
   defaultHeaders = [
     'Accept',
     'Accept-Language',
@@ -77,7 +77,7 @@ export function adapter({
 
         await serverStack.setAllConfig({
           'aws:region': { value: region },
-          cachePolicy: { value: cachePolicy },
+          cachePolicy: { value: `Managed-${cachePolicy}` },
           projectPath: { value: process.cwd() },
           serverPath: { value: server_directory },
           optionsPath: { value: options_directory },

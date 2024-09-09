@@ -84,7 +84,7 @@ features are as follows:
 export interface AWSAdapterProps {
   artifactPath?: string // Build output directory (default: build)
   autoDeploy?: boolean // Should automatically deploy in SvelteKit build step (default: false)
-  cachePolicy?: string // Cloudfront managed cache policy (default: 'Managed-CachingOptimized')
+  cachePolicy?: string // Cloudfront managed cache policy (default: 'CachingOptimized')
   defaultHeaders?: string[] // Default whitelist of headers for the SSR server. (default: ['Accept','Accept-Language','If-None-Match','Host','Origin','Referer','X-Forwarded-Host'])
   esbuildOptions?: any // Override or extend default esbuild options for the SSR server. Supports `external` (default `['node:*']`), `format` (default `cjs`), `target` (default `node18`), `banner` (default `{}`).
   extraHeaders?: string[] // Additional headers to add to whitelist. (default: [])
