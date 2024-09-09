@@ -1,3 +1,9 @@
+## [3.3.2](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v3.3.1...v3.3.2) (2024-09-09)
+
+### Bug Fixes
+
+* added cachePolicy to the wrong stack ([c7f1014](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/commit/c7f101433bbc7e2516022a705d0e7c0716254773))
+
 ## [3.3.1](https://github.com/Data-Only-Greater/sveltekit-adapter-aws-pulumi/compare/v3.3.0...v3.3.1) (2024-09-09)
 
 ### Bug Fixes
