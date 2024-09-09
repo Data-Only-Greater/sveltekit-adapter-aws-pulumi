@@ -213,6 +213,7 @@ export function buildCDN(
   serverHeaders: string[],
   FQDN?: string,
   certificateArn?: pulumi.Input<string>,
+  cachePolicy: string = 'Managed-CachingOptimized',
 ): aws.cloudfront.Distribution {
   const defaultRequestPolicy = new aws.cloudfront.OriginRequestPolicy(
     registerName('DefaultRequestPolicy'),
@@ -244,7 +245,7 @@ export function buildCDN(
   )
 
   const optimizedCachePolicy = aws.cloudfront.getCachePolicyOutput({
-    name: 'Managed-CachingOptimized',
+    name: cachePolicy,
   })
 
   const distribution = new aws.cloudfront.Distribution(

@@ -84,12 +84,12 @@ features are as follows:
 export interface AWSAdapterProps {
   artifactPath?: string // Build output directory (default: build)
   autoDeploy?: boolean // Should automatically deploy in SvelteKit build step (default: false)
+  cachePolicy?: string // Cloudfront managed cache policy (default: 'Managed-CachingOptimized')
   defaultHeaders?: string[] // Default whitelist of headers for the SSR server. (default: ['Accept','Accept-Language','If-None-Match','Host','Origin','Referer','X-Forwarded-Host'])
-  extraHeaders?: string[] // Additional headers to add to whitelist. (default: [])
   esbuildOptions?: any // Override or extend default esbuild options for the SSR server. Supports `external` (default `['node:*']`), `format` (default `cjs`), `target` (default `node18`), `banner` (default `{}`).
+  extraHeaders?: string[] // Additional headers to add to whitelist. (default: [])
   FQDN?: string // Full qualified domain name of CloudFront deployment (e.g. demo.example.com)
   memorySize?: number // Memory size of SSR lambda in MB (default: 128)
-  pulumiPaths: string[] // For internal use only
   region?: string // Region to deploy resources (default: us-east-2)
   serverStreaming?: boolean // Use lambda streaming responses for SSR server (default: false)
   stackName?: string // Pulumi stack name (default: dev)
@@ -118,7 +118,7 @@ in the SvelteKit documentation for further details.
 A script is provided to destroy the infrastructure, with the following
 signature:
 
-```
+```console
 adapter-stack-destroy [artifactPath]
 
 Destroy the SvelteKit adapter's Pulumi stacks

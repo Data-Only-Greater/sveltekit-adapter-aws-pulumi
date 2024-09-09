@@ -146,9 +146,7 @@ describe('stacks/main/resources.ts', () => {
       role: 'mock',
     })
     const bucket = new aws.s3.Bucket('MockBucket')
-    const routes = ['mock/*', 'another/*']
     const serverHeaders = ['mock1', 'mock2']
-    const staticHeaders = ['mock3']
     const FQDN = 'server.example.com'
     const certificateArn = 'MockCertificateArn'
     const bucketId = await promiseOf(bucket.id)

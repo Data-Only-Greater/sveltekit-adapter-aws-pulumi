@@ -17,20 +17,22 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 export interface AWSAdapterProps {
   artifactPath?: string
   autoDeploy?: boolean
+  cachePolicy?: string
   defaultHeaders?: string[]
-  extraHeaders?: string[]
   esbuildOptions?: any
+  extraHeaders?: string[]
   FQDN?: string
-  pulumiPaths?: string[]
   memorySize?: number
+  pulumiPaths?: string[]
   region?: string
   serverStreaming?: boolean
-  stackName?: string
+  stackName: string
 }
 
 export function adapter({
   artifactPath = 'build',
   autoDeploy = false,
+  cachePolicy = 'Managed-CachingOptimized',
   defaultHeaders = [
     'Accept',
     'Accept-Language',
@@ -44,11 +46,10 @@ export function adapter({
   esbuildOptions = {},
   FQDN,
   memorySize = 128,
-  pulumiPaths = [],
   region = 'us-east-2',
   serverStreaming = false,
   stackName = 'dev',
-}: AWSAdapterProps = {}) {
+}: AWSAdapterProps) {
   /** @type {import('@sveltejs/kit').Adapter} */
   return {
     name: 'adapter-aws-pulumi',
@@ -64,8 +65,6 @@ export function adapter({
       const options_directory = await buildOptions(builder, artifactPath)
 
       if (autoDeploy) {
-        let adapterProps: AWSAdapterProps = {}
-
         builder.log.minor('Deploy using Pulumi.')
 
         // Setup server stack.
@@ -78,6 +77,7 @@ export function adapter({
 
         await serverStack.setAllConfig({
           'aws:region': { value: region },
+          cachePolicy: { value: cachePolicy },
           projectPath: { value: process.cwd() },
           serverPath: { value: server_directory },
           optionsPath: { value: options_directory },
@@ -158,8 +158,11 @@ export function adapter({
           onOutput: console.info,
         })
 
-        adapterProps.pulumiPaths = [serverPath, mainPath]
-        adapterProps.stackName = stackName
+        const adapterProps: AWSAdapterProps = {
+          pulumiPaths: [serverPath, mainPath],
+          stackName: stackName,
+        }
+
         writeFileSync(
           join(artifactPath, '.adapterprops.json'),
           JSON.stringify(adapterProps),
