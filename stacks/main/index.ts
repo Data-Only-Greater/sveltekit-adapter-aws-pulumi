@@ -42,9 +42,9 @@ const distribution = buildCDN(
   routerHandler,
   bucket,
   serverHeaders,
-  cachePolicy,
   FQDN,
   certificateArn,
+  cachePolicy,
 )
 
 if (FQDN) {
