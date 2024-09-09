@@ -63,6 +63,9 @@
   "peerDependencies": {
     "@sveltejs/kit": "^2.5.8"
   },
+  "overrides": {
+    "conventional-changelog-conventionalcommits": ">= 8.0.0"
+  },
   "engines": {
     "node": ">=18.13"
   },
